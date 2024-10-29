@@ -1,1 +1,0 @@
-/mnt/nfs/homes/rvan-der/Projects/ready-set-boole/home_repo/ready-set-boole/target/debug/ex00: /mnt/nfs/homes/rvan-der/Projects/ready-set-boole/home_repo/ready-set-boole/ex00/src/adder.rs /mnt/nfs/homes/rvan-der/Projects/ready-set-boole/home_repo/ready-set-boole/ex00/src/main.rs
