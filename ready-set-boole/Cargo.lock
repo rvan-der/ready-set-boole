@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "ex00"
+name = "ready-set-boole"
 version = "0.1.0"

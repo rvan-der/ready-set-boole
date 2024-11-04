@@ -1,3 +1,6 @@
-[workspace]
-members = ["ex00"]
-resolver = "2"
+[package]
+name = "ready-set-boole"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
