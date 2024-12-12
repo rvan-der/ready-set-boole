@@ -1,7 +1,8 @@
 use std::env;
 
 pub mod exercices;
-use crate::exercices::ex01::multiplier;
+
+use exercices::ex01::multiplier;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

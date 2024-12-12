@@ -2,7 +2,7 @@ use std::env;
 
 pub mod exercices;
 
-use crate::exercices::ex00::adder;
+use exercices::ex00::adder;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

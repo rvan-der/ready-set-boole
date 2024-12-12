@@ -2,7 +2,7 @@ use std::env;
 
 pub mod exercices;
 
-use crate::exercices::ex02::gray_code;
+use exercices::ex02::gray_code;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
