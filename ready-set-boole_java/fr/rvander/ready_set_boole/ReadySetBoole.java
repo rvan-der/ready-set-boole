@@ -2,9 +2,8 @@ package fr.rvander.ready_set_boole;
 
 import java.util.*;
 import java.lang.reflect.*;
-import fr.rvander.ready_set_boole.ex00.Adder;
-import fr.rvander.ready_set_boole.ex01.Multiplier;
-import fr.rvander.ready_set_boole.ex02.GrayCode;
+import fr.rvander.ready_set_boole.*;
+
 import fr.rvander.ready_set_boole.AST.*;
 
 
@@ -22,7 +21,7 @@ public class ReadySetBoole {
 					method = m;
 				}
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 		if (method == null || args[0].equals("main")) {
@@ -31,15 +30,19 @@ public class ReadySetBoole {
 		}
 		int paramCount = method.getParameterCount();
 		if (paramCount != args.length - 1) {
-			System.err.println("Wrong number of parameters for '" + method.getName() + "'. Found " + (args.length - 1) + " but " + paramCount + " are needed.");
+			System.err.println("Wrong number of parameters for '" 
+				+ method.getName() + "'. Found " + (args.length - 1)
+				+ " but " + paramCount + " are needed.");
 			return;
 		}
 		try {
-			method.invoke(new ReadySetBoole(), (Object[]) Arrays.copyOfRange(args, 1, args.length));
-		} catch (Throwable e) {
+			method.invoke(new ReadySetBoole(),
+				(Object[]) Arrays.copyOfRange(args, 1, args.length));
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
+
 
 	public void adder(String a, String b) {
 		int aInt;
@@ -47,11 +50,12 @@ public class ReadySetBoole {
 		try {
 			aInt = Integer.parseUnsignedInt(a);
 			bInt = Integer.parseUnsignedInt(b);
-			System.out.println(Integer.toUnsignedString(Adder.adder(aInt, bInt)));
-		} catch (Throwable e) {
+			System.out.println(Integer.toUnsignedString(Ex00.adder(aInt, bInt)));
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
+
 
 	public void multiplier(String a, String b) {
 		int aInt;
@@ -59,30 +63,36 @@ public class ReadySetBoole {
 		try {
 			aInt = Integer.parseUnsignedInt(a);
 			bInt = Integer.parseUnsignedInt(b);
-			System.out.println(Integer.toUnsignedString(Multiplier.multiplier(aInt, bInt)));
-		} catch (Throwable e) {
+			System.out.println(Integer.toUnsignedString(Ex01.multiplier(aInt, bInt)));
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
+
 
 	public void gray_code(String n) {
 		int nInt;
 		try {
 			nInt = Integer.parseUnsignedInt(n);
-			System.out.println(Integer.toUnsignedString(GrayCode.gray_code(nInt)));
-		} catch (Throwable e) {
+			System.out.println(Integer.toUnsignedString(Ex02.gray_code(nInt)));
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
 
-	public void test() {
+
+	public void eval_formula(String formula) {
 		try {
-			AstNode node = new AstNode("operator", 2, "+");
-			for (AstNode n : node.operands) {
-				System.out.println(n);
-			}
-		} catch (Throwable e) {
+			System.out.println(Ex03.eval_formula(formula));
+			AstBuilder.getAstBuilder().astFromString(formula).visualize();
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
+
+
+	// public void test() {
+	// 	boolean l = true, r = true;
+	// 	System.out.println(l && !r || !l && r);
+	// }
 }

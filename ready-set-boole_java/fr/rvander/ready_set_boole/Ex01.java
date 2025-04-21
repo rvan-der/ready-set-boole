@@ -1,9 +1,9 @@
-package fr.rvander.ready_set_boole.ex01;
+package fr.rvander.ready_set_boole;
 
-import fr.rvander.ready_set_boole.ex00.Adder;
+import fr.rvander.ready_set_boole.Ex00;
 
 
-public class Multiplier {
+public class Ex01 {
 
 	public static int multiplier(int a, int b) {
 		int result = 0;
@@ -13,7 +13,7 @@ public class Multiplier {
 		}
 		while (b != 0) {
 			if ((b & 1) != 0) {
-				result = Adder.adder(a, result);
+				result = Ex00.adder(a, result);
 			}
 			a = a << 1;
 			b = b >>> 1;

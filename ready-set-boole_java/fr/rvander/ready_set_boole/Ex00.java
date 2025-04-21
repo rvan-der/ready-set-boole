@@ -1,7 +1,7 @@
-package fr.rvander.ready_set_boole.ex00;
+package fr.rvander.ready_set_boole;
 
 
-public class Adder {
+public class Ex00 {
 
 	public static int adder(int a, int b) {
 		int tmp;
