@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashMap;
 
 
 public class BinaryOperatorNode extends AstNode {
@@ -23,7 +24,7 @@ public class BinaryOperatorNode extends AstNode {
 	}
 
 
-	protected boolean evaluate() throws AstException {
+	protected boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException {
 		if (this.operands == null) {
 			throw new AstException(
 				"Error at evaluation : missing operands for '"
@@ -31,8 +32,8 @@ public class BinaryOperatorNode extends AstNode {
 		}
 
 		boolean result;
-		boolean left = this.operands[0].evaluate();
-		boolean right = this.operands[1].evaluate();
+		boolean left = this.operands[0].evaluate(hypothesis);
+		boolean right = this.operands[1].evaluate(hypothesis);
 
 		switch (this.operator) {
 		case '&': result = left && right ? true : false; break;

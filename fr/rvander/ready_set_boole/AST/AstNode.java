@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashMap;
 
 
 public abstract class AstNode {
@@ -17,7 +18,7 @@ public abstract class AstNode {
 	}
 
 
-	protected abstract boolean evaluate() throws AstException;
+	protected abstract boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException;
 
 
 	protected void setOperands(AstNode[] operands) throws AstException {

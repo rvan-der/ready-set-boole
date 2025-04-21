@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashMap;
 
 
 public class UnaryOperatorNode extends AstNode {
@@ -19,21 +20,21 @@ public class UnaryOperatorNode extends AstNode {
 	}
 
 
-	protected boolean evaluate() throws AstException {
+	protected boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException {
 		if (this.operands == null) {
 			throw new AstException(
-				"Error at evaluation : missing operand for '"
+				"Error during evaluation : missing operand for '"
 				+ this.operator + "'. The formula is invalid.");
 		}
 
 		boolean result;
-		boolean operand = this.operands[0].evaluate();
+		boolean operand = this.operands[0].evaluate(hypothesis);
 
 		switch (this.operator) {
 		case '!': result = !operand ? true : false; break;
 		default:
 			throw new AstException(
-				"Error at evaluation : unknown operator '"
+				"Error during evaluation : unknown operator '"
 				+ this.operator + "'.");
 		}
 

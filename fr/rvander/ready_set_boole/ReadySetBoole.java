@@ -19,6 +19,7 @@ public class ReadySetBoole {
 			for (Method m : ReadySetBoole.class.getDeclaredMethods()) {
 				if (m.getName().equals(args[0])) {
 					method = m;
+					break;
 				}
 			}
 		} catch (Exception e) {
@@ -44,46 +45,66 @@ public class ReadySetBoole {
 	}
 
 
-	public void adder(String a, String b) {
+	private void adder(String a, String b) {
 		int aInt;
 		int bInt;
 		try {
 			aInt = Integer.parseUnsignedInt(a);
 			bInt = Integer.parseUnsignedInt(b);
-			System.out.println(Integer.toUnsignedString(Ex00.adder(aInt, bInt)));
 		} catch (Exception e) {
 			System.err.println(e);
+			return;
 		}
+		System.out.println(Integer.toUnsignedString(Ex00.adder(aInt, bInt)));
 	}
 
 
-	public void multiplier(String a, String b) {
+	private void multiplier(String a, String b) {
 		int aInt;
 		int bInt;
 		try {
 			aInt = Integer.parseUnsignedInt(a);
 			bInt = Integer.parseUnsignedInt(b);
-			System.out.println(Integer.toUnsignedString(Ex01.multiplier(aInt, bInt)));
 		} catch (Exception e) {
 			System.err.println(e);
+			return;
 		}
+		System.out.println(Integer.toUnsignedString(Ex01.multiplier(aInt, bInt)));
 	}
 
 
-	public void gray_code(String n) {
+	private void gray_code(String n) {
 		int nInt;
 		try {
 			nInt = Integer.parseUnsignedInt(n);
-			System.out.println(Integer.toUnsignedString(Ex02.gray_code(nInt)));
+		} catch (Exception e) {
+			System.err.println(e);
+			return;
+		}
+		System.out.println(Integer.toUnsignedString(Ex02.gray_code(nInt)));
+	}
+
+
+	private void eval_formula(String formula) {
+		try {
+			System.out.println(Ex03.eval_formula(formula));
 		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
 
 
-	public void eval_formula(String formula) {
+	private void print_truth_table(String formula) {
 		try {
-			System.out.println(Ex03.eval_formula(formula));
+			Ex04.print_truth_table(formula);
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
+
+
+	private void print_tree(String formula) {
+		try {
 			AstBuilder.getAstBuilder().astFromString(formula).visualize();
 		} catch (Exception e) {
 			System.err.println(e);
@@ -91,7 +112,7 @@ public class ReadySetBoole {
 	}
 
 
-	// public void test() {
+	// private void test() {
 	// 	boolean l = true, r = true;
 	// 	System.out.println(l && !r || !l && r);
 	// }
