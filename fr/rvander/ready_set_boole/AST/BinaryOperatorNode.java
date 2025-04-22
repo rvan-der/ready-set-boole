@@ -84,14 +84,14 @@ public class BinaryOperatorNode extends AstNode {
 		AstNode a, b, c;
 
 		if (this.operator == '|') {
-			if (this.operands[0].programSymbol.equals("|")) {
+			if (this.operands[0].programSymbol.equals("&")) {
 				a = this.operands[1];
 				b = this.operands[0].operands[0];
 				c = this.operands[0].operands[1];
 				newSubtree = RewriteSubtrees.distribution(a, b, c, '|');
 				return newSubtree.rewriteCnf();
 			}
-			if (this.operands[1].programSymbol.equals("|")) {
+			if (this.operands[1].programSymbol.equals("&")) {
 				a = this.operands[0];
 				b = this.operands[1].operands[0];
 				c = this.operands[1].operands[1];
