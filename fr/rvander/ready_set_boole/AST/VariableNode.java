@@ -17,16 +17,30 @@ public class VariableNode extends AstNode {
 	}
 
 
-	protected boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException {
+	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		if (hypothesis == null) {
-			throw new AstException(
-				"Null hypothesis during evluation of formula containing variables.");
+			System.err.println(
+				"Warning! Missing hypothesis during evaluation of formula "
+				+ "containing variables. False was returned by default.");
+			return false;
 		}
 		Boolean result = hypothesis.get(this.name);
 		if (result == null) {
-			throw new AstException(
-				"Invalid hypothesis during evluation of formula containing variables.");
+			System.err.println(
+				"Warning! Invalid hypothesis during evaluation of formula "
+				+ "containing variables. False was returned by default.");
+			return false;
 		}
 		return result.booleanValue();
+	}
+
+
+	protected AstNode rewriteNnf() {
+		return this;
+	}
+
+
+	protected AstNode copySubtree() {
+		return new VariableNode(this.name);
 	}
 }

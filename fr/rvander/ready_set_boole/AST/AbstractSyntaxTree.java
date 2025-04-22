@@ -17,16 +17,18 @@ public class AbstractSyntaxTree {
 	}
 
 
-	public boolean evaluate() throws AstException {
+	public boolean evaluate() {
 		if (this.variables.length != 0) {
-			throw new AstException(
-				"Can't evaluate an expression containing variables.");
+			System.err.println(
+				"Warning! Can't evaluate an expression containing variables. "
+				+ "False was returned by default.");
+			return false;
 		}
 		return this.root.evaluate(null);
 	}
 
 
-	public void printTruthTable() throws AstException {
+	public void printTruthTable() {
 		HashMap<String, Boolean> hypothesis = new HashMap<>();
 
 		System.out.print("│");
@@ -54,6 +56,16 @@ public class AbstractSyntaxTree {
 				+ (this.root.evaluate(hypothesis) == true ? "1" : "0")
 				+ " │");
 		}
+	}
+
+
+	public void rewriteNnf() {
+		this.root = root.rewriteNnf();
+	}
+
+
+	public String getFormula() {
+		return this.root.getFormula();
 	}
 
 

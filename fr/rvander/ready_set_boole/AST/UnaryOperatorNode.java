@@ -20,24 +20,66 @@ public class UnaryOperatorNode extends AstNode {
 	}
 
 
-	protected boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException {
-		if (this.operands == null) {
-			throw new AstException(
-				"Error during evaluation : missing operand for '"
-				+ this.operator + "'. The formula is invalid.");
-		}
-
+	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		boolean result;
 		boolean operand = this.operands[0].evaluate(hypothesis);
 
 		switch (this.operator) {
 		case '!': result = !operand ? true : false; break;
 		default:
-			throw new AstException(
-				"Error during evaluation : unknown operator '"
-				+ this.operator + "'.");
+			System.err.println("Warning! Error during evaluation : unknown operator '"
+				+ this.operator + "'. False was returned by default.");
+			result = false;
 		}
 
 		return result;
+	}
+
+
+	protected AstNode rewriteNnf() {
+		AstNode newSubtree;
+
+		switch (this.operator) {
+			case '!':
+				switch (this.operands[0].programSymbol) {
+					case "!":
+						newSubtree = this.operands[0].operands[0];
+						break;
+					case "|":
+						newSubtree = NnfSubtrees.deMorgansLaws(
+							this.operands[0].operands[0],
+							this.operands[0].operands[1], '|');
+						break;
+					case "&":
+						// System.out.println("plop");
+						newSubtree = NnfSubtrees.deMorgansLaws(
+							this.operands[0].operands[0],
+							this.operands[0].operands[1], '&');
+						// newSubtree.visualize(0, "");
+						break;
+					default:
+						newSubtree = null;
+				}
+				break;
+			default:
+				newSubtree = null;
+		}
+
+		if (newSubtree == null) {
+			this.operands[0] = this.operands[0].rewriteNnf();
+			return this;
+		}
+		else {
+			return newSubtree.rewriteNnf();
+		}
+	}
+
+
+	protected AstNode copySubtree() {
+		AstNode copy = new UnaryOperatorNode(this.operator);
+		AstNode[] operandsCopy = new AstNode[1];
+		operandsCopy[0] = this.operands[0].copySubtree();
+		copy.setOperands(operandsCopy);
+		return copy;
 	}
 }

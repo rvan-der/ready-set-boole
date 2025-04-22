@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 public abstract class AstNode {
 
-	private AstNode parent = null;
 	protected AstNode[] operands = null;
 	protected String mathSymbol;
 	protected String programSymbol;
@@ -18,37 +17,31 @@ public abstract class AstNode {
 	}
 
 
-	protected abstract boolean evaluate(HashMap<String, Boolean> hypothesis) throws AstException;
+	protected abstract boolean evaluate(HashMap<String, Boolean> hypothesis);
 
 
-	protected void setOperands(AstNode[] operands) throws AstException {
+	protected abstract AstNode rewriteNnf();
 
-		if (this.type.nbOperands() == 0) {
-			throw new AstException(
-				"Trying to pass operands to a node of type " + this.type
-				+ " which has no operands.");
-		}
 
-		if (operands.length != this.type.nbOperands()) {
-			throw new AstException(
-				"Wrong number of operands passed to AstNode of type "
-				+ this.type +": " + operands.length);
-		}
+	protected abstract AstNode copySubtree();
 
+
+	protected void setOperands(AstNode[] operands) {
 		this.operands = operands;
-		for (AstNode n : this.operands) {
-			n.setParent(this);
+	}
+
+
+	protected void setOperandAt(AstNode operand, int index) {
+		this.operands[index] = operand;
+	}
+	
+
+	protected String getFormula() {
+		String formula = "";
+		for (int i = 0; i < this.type.nbOperands(); i += 1) {
+			formula += this.operands[i].getFormula();
 		}
-	}
-
-
-	protected void setParent(AstNode parent) {
-		this.parent = parent;
-	}
-
-
-	protected AstNode getParent() {
-		return this.parent;
+		return formula + this.programSymbol;
 	}
 
 

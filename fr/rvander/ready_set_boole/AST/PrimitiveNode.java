@@ -20,4 +20,14 @@ public class PrimitiveNode extends AstNode {
 	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		return this.value;
 	}
+
+
+	protected AstNode rewriteNnf() {
+		return this;
+	}
+
+
+	protected AstNode copySubtree() {
+		return new PrimitiveNode(this.value);
+	}
 }

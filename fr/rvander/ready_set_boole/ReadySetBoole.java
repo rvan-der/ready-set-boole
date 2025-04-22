@@ -112,8 +112,27 @@ public class ReadySetBoole {
 	}
 
 
-	// private void test() {
-	// 	boolean l = true, r = true;
-	// 	System.out.println(l && !r || !l && r);
-	// }
+	public static void negation_normal_form(String formula) {
+		try {
+			System.out.println(Ex05.negation_normal_form(formula));
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
+
+
+	private void test(String formula) {
+		AbstractSyntaxTree tree;
+		try {
+			tree = AstBuilder.getAstBuilder().astFromString(formula);
+		} catch (Exception e) {
+			System.err.println(e);
+			return;
+		}
+		System.out.println("Before: " + tree.getFormula());
+		tree.visualize();
+		tree.rewriteNnf();
+		System.out.println("\nAfter: " + tree.getFormula());
+		tree.visualize();
+	}
 }
