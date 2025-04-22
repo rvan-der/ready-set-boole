@@ -85,7 +85,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void eval_formula(String formula) {
+	private void evaluate(String formula) {
 		try {
 			System.out.println(Ex03.eval_formula(formula));
 		} catch (Exception e) {
@@ -94,7 +94,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void print_truth_table(String formula) {
+	private void table(String formula) {
 		try {
 			Ex04.print_truth_table(formula);
 		} catch (Exception e) {
@@ -103,7 +103,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void print_tree(String formula) {
+	private void tree(String formula) {
 		try {
 			AstBuilder.getAstBuilder().astFromString(formula).visualize();
 		} catch (Exception e) {
@@ -112,9 +112,18 @@ public class ReadySetBoole {
 	}
 
 
-	public static void negation_normal_form(String formula) {
+	private void nnf(String formula) {
 		try {
 			System.out.println(Ex05.negation_normal_form(formula));
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
+
+
+	private void cnf(String formula) {
+		try {
+			System.out.println(Ex06.conjunctive_normal_form(formula));
 		} catch (Exception e) {
 			System.err.println(e);
 		}

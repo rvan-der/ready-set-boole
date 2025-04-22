@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -14,6 +15,12 @@ public class VariableNode extends AstNode {
 		this.name = name;
 		this.programSymbol = name;
 		this.mathSymbol = name;
+	}
+
+
+	protected HashSet<String> getVariables(HashSet<String> varsSet) {
+		varsSet.add(this.name);
+		return varsSet;
 	}
 
 
@@ -36,6 +43,11 @@ public class VariableNode extends AstNode {
 
 
 	protected AstNode rewriteNnf() {
+		return this;
+	}
+
+
+	protected AstNode rewriteCnf() {
 		return this;
 	}
 

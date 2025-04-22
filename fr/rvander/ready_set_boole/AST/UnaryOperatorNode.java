@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -17,6 +18,11 @@ public class UnaryOperatorNode extends AstNode {
 		case '!': this.mathSymbol = "¬"; break;
 		default: this.mathSymbol = "[symbol not found]";
 		}
+	}
+
+
+	protected HashSet<String> getVariables(HashSet<String> varsSet) {
+		return this.operands[0].getVariables(varsSet);
 	}
 
 
@@ -46,13 +52,13 @@ public class UnaryOperatorNode extends AstNode {
 						newSubtree = this.operands[0].operands[0];
 						break;
 					case "|":
-						newSubtree = NnfSubtrees.deMorgansLaws(
+						newSubtree = RewriteSubtrees.deMorgansLaws(
 							this.operands[0].operands[0],
 							this.operands[0].operands[1], '|');
 						break;
 					case "&":
 						// System.out.println("plop");
-						newSubtree = NnfSubtrees.deMorgansLaws(
+						newSubtree = RewriteSubtrees.deMorgansLaws(
 							this.operands[0].operands[0],
 							this.operands[0].operands[1], '&');
 						// newSubtree.visualize(0, "");
@@ -72,6 +78,12 @@ public class UnaryOperatorNode extends AstNode {
 		else {
 			return newSubtree.rewriteNnf();
 		}
+	}
+
+
+	protected AstNode rewriteCnf() {
+		this.operands[0] = this.operands[0].rewriteCnf();
+		return this;
 	}
 
 

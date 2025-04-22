@@ -1,6 +1,8 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -10,10 +12,9 @@ public class AbstractSyntaxTree {
 	private int nbVars;
 
 
-	protected AbstractSyntaxTree(AstNode root, String[] variables) {
+	protected AbstractSyntaxTree(AstNode root) {
 		this.root = root;
-		this.variables = variables;
-		this.nbVars = variables.length;
+		this.updateVariables();
 	}
 
 
@@ -25,6 +26,18 @@ public class AbstractSyntaxTree {
 			return false;
 		}
 		return this.root.evaluate(null);
+	}
+
+
+	protected void updateVariables() {
+		HashSet<String> varsSet = this.root.getVariables(new HashSet<String>());
+		String[] variables = new String[0];
+		if (!varsSet.isEmpty()) {
+			variables = varsSet.toArray(variables);
+			Arrays.sort((Object[]) variables);
+		}
+		this.variables = variables;
+		this.nbVars = variables.length;
 	}
 
 
@@ -59,8 +72,16 @@ public class AbstractSyntaxTree {
 	}
 
 
-	public void rewriteNnf() {
-		this.root = root.rewriteNnf();
+	public AbstractSyntaxTree rewriteNnf() {
+		this.root = this.root.rewriteNnf();
+		return this;
+	}
+
+
+	public AbstractSyntaxTree rewriteCnf() {
+		this.root = this.root.rewriteNnf();
+		this.root = this.root.rewriteCnf();
+		return this;
 	}
 
 
@@ -70,6 +91,6 @@ public class AbstractSyntaxTree {
 
 
 	public void visualize() {
-		this.root.visualize(0, "");
+		this.root.visualize(0, "", false);
 	}
 }

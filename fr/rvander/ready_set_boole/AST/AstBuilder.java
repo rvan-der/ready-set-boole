@@ -1,9 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
-import java.util.Arrays;
 import java.util.ArrayDeque;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 
@@ -28,20 +26,15 @@ public class AstBuilder {
 				"Received null instead of String in astBuilder.");
 		}
 
-		HashSet<String> varsSet = new HashSet<>();
 		ArrayDeque<AstNode> stack = new ArrayDeque<>();
 
 		for (char token : formula.toCharArray()) {
 
 			AstNode node = this.newNodeFromToken(token);
 			AstNode[] operands;
-
 			switch (node.type) {
 				case PRIMITIVE:
-					stack.push(node);
-					break;
 				case VARIABLE:
-					varsSet.add(((VariableNode)node).name);
 					stack.push(node);
 					break;
 				case BINARY_OP:
@@ -74,13 +67,7 @@ public class AstBuilder {
 			throw new AstException("The formula is invalid.");
 		}
 
-		String[] variables = new String[0];
-		if (!varsSet.isEmpty()) {
-			variables = varsSet.toArray(variables);
-			Arrays.sort((Object[]) variables);
-		}
-
-		return new AbstractSyntaxTree(stack.pop(), variables);
+		return new AbstractSyntaxTree(stack.pop());
 	}
 
 

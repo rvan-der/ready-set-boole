@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -21,9 +22,15 @@ public abstract class AstNode {
 
 
 	protected abstract AstNode rewriteNnf();
+	
+
+	protected abstract AstNode rewriteCnf();
 
 
 	protected abstract AstNode copySubtree();
+
+
+	protected abstract HashSet<String> getVariables(HashSet<String> varsSet);
 
 
 	protected void setOperands(AstNode[] operands) {
@@ -45,16 +52,24 @@ public abstract class AstNode {
 	}
 
 
-	protected void visualize(int depth, String branches) {
-		if (depth > 0) {
+	protected void visualize(int depth, String branches, boolean unary) {
+		if (depth > 0 && !unary) {
 			for (int i = 0; i < depth - 1; i += 1) {
 				System.out.print(branches.substring(i, i + 1) + "  ");
 			}
-			System.out.print(branches.charAt(depth - 1) == '│' ? "├─ " : "└─ ");
+			System.out.print(branches.charAt(depth - 1) == '│' ? "├─╴" : "└─╴");
 		}
-		System.out.println(this.mathSymbol);
+		if (depth > 0 && unary) {
+			System.out.print("╶╴");
+		}
+		System.out.print(this.mathSymbol);
+		if (this.type.nbOperands() != 1) {
+			System.out.print("\n");
+		}
 		for (int i = this.type.nbOperands() - 1; i >= 0; i -= 1) {
-			this.operands[i].visualize(depth + 1, branches + (i > 0 ? "│" : " "));
+			this.operands[i].visualize(depth + 1,
+				branches + (i > 0 ? "│" : " "),
+				this.type.nbOperands() == 1 ? true : false);
 		}
 	}
 }

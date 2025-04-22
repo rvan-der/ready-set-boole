@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -21,6 +22,12 @@ public class BinaryOperatorNode extends AstNode {
 			case '=': this.mathSymbol = "⇔"; break;
 			default: this.mathSymbol = "[symbol not found]";
 		}
+	}
+
+
+	protected HashSet<String> getVariables(HashSet<String> varsSet) {
+		varsSet = this.operands[0].getVariables(varsSet);
+		return this.operands[1].getVariables(varsSet);
 	}
 
 
@@ -50,11 +57,11 @@ public class BinaryOperatorNode extends AstNode {
 
 		switch (this.operator) {
 			case '>':
-				newSubtree = NnfSubtrees.materialCondition(
+				newSubtree = RewriteSubtrees.materialCondition(
 					this.operands[0], this.operands[1]);
 				break;
 			case '=':
-				newSubtree = NnfSubtrees.equivalence(
+				newSubtree = RewriteSubtrees.equivalence(
 					this.operands[0], this.operands[1]);
 				break;
 			default:
@@ -69,6 +76,32 @@ public class BinaryOperatorNode extends AstNode {
 		else {
 			return newSubtree.rewriteNnf();
 		}
+	}
+
+
+	protected AstNode rewriteCnf() {
+		AstNode newSubtree;
+		AstNode a, b, c;
+
+		if (this.operator == '|') {
+			if (this.operands[0].programSymbol.equals("|")) {
+				a = this.operands[1];
+				b = this.operands[0].operands[0];
+				c = this.operands[0].operands[1];
+				newSubtree = RewriteSubtrees.distribution(a, b, c, '|');
+				return newSubtree.rewriteCnf();
+			}
+			if (this.operands[1].programSymbol.equals("|")) {
+				a = this.operands[0];
+				b = this.operands[1].operands[0];
+				c = this.operands[1].operands[1];
+				newSubtree = RewriteSubtrees.distribution(a, b, c, '|');
+				return newSubtree.rewriteCnf();
+			}
+		}
+		this.operands[0] = this.operands[0].rewriteNnf();
+		this.operands[1] = this.operands[1].rewriteNnf();
+		return this;
 	}
 
 

@@ -3,7 +3,7 @@ package fr.rvander.ready_set_boole.AST;
 import fr.rvander.ready_set_boole.AST.*;
 
 
-public class NnfSubtrees {
+public class RewriteSubtrees {
 
 	protected static AstNode materialCondition(AstNode a, AstNode b) {
 		AstNode root = new BinaryOperatorNode('|');
@@ -22,8 +22,8 @@ public class NnfSubtrees {
 	protected static AstNode equivalence(AstNode a, AstNode b) {
 		AstNode root = new BinaryOperatorNode('&');
 		AstNode[] rootOperands = new AstNode[2];
-		AstNode left = NnfSubtrees.materialCondition(a, b);
-		AstNode right = NnfSubtrees.materialCondition(b.copySubtree(), a.copySubtree());
+		AstNode left = RewriteSubtrees.materialCondition(a, b);
+		AstNode right = RewriteSubtrees.materialCondition(b.copySubtree(), a.copySubtree());
 		rootOperands[0] = left;
 		rootOperands[1] = right;
 		root.setOperands(rootOperands);
@@ -32,17 +32,36 @@ public class NnfSubtrees {
 
 
 	protected static AstNode deMorgansLaws(AstNode a, AstNode b, char operator) {
-		AstNode root = operator == '|' ?
-			new BinaryOperatorNode('&') : new BinaryOperatorNode('|');
-		AstNode[] rootOperands = new AstNode[2];
+		AstNode root = new BinaryOperatorNode(operator == '|' ? '&' : '|');
 		AstNode left = new UnaryOperatorNode('!');
-		AstNode[] leftOperands = new AstNode[1];
 		AstNode right = new UnaryOperatorNode('!');
+		AstNode[] rootOperands = new AstNode[2];
+		AstNode[] leftOperands = new AstNode[1];
 		AstNode[] rightOperands = new AstNode[1];
 		rootOperands[0] = left;
 		rootOperands[1] = right;
 		leftOperands[0] = a;
 		rightOperands[0] = b;
+		root.setOperands(rootOperands);
+		left.setOperands(leftOperands);
+		right.setOperands(rightOperands);
+		return root;
+	}
+
+
+	protected static AstNode distribution(AstNode a, AstNode b, AstNode c, char operator) {
+		AstNode root = new BinaryOperatorNode(operator == '|' ? '&' : '|');
+		AstNode left = new BinaryOperatorNode(operator);
+		AstNode right = new BinaryOperatorNode(operator);
+		AstNode[] rootOperands = new AstNode[2];
+		AstNode[] leftOperands = new AstNode[2];
+		AstNode[] rightOperands = new AstNode[2];
+		rootOperands[0] = left;
+		rootOperands[1] = right;
+		leftOperands[0] = a;
+		leftOperands[1] = b;
+		rightOperands[0] = a.copySubtree();
+		rightOperands[1] = c;
 		root.setOperands(rootOperands);
 		left.setOperands(leftOperands);
 		right.setOperands(rightOperands);

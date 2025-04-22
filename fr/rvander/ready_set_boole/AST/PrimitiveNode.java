@@ -1,6 +1,7 @@
 package fr.rvander.ready_set_boole.AST;
 
 import fr.rvander.ready_set_boole.AST.*;
+import java.util.HashSet;
 import java.util.HashMap;
 
 
@@ -17,12 +18,22 @@ public class PrimitiveNode extends AstNode {
 	}
 
 
+	protected HashSet<String> getVariables(HashSet<String> varsSet) {
+		return varsSet;
+	}
+
+
 	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		return this.value;
 	}
 
 
 	protected AstNode rewriteNnf() {
+		return this;
+	}
+
+
+	protected AstNode rewriteCnf() {
 		return this;
 	}
 
