@@ -29,7 +29,7 @@ public class AbstractSyntaxTree {
 	}
 
 
-	protected void updateVariables() {
+	protected final void updateVariables() {
 		HashSet<String> varsSet = this.root.getVariables(new HashSet<String>());
 		String[] variables = new String[0];
 		if (!varsSet.isEmpty()) {
