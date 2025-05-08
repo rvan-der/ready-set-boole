@@ -9,6 +9,6 @@ public class Ex03 {
 		return AstBuilder
 			.getAstBuilder()
 			.astFromString(formula)
-			.evaluate();
+			.evaluate(null);
 	}
 }

@@ -3,23 +3,32 @@ package fr.rvander.ready_set_boole.AST;
 import fr.rvander.ready_set_boole.AST.*;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.io.Serializable;
 
 
-public abstract class AstNode {
+public abstract class AstNode implements Serializable {
 
-	protected AstNode[] operands = null;
-	protected String mathSymbol;
-	protected String programSymbol;
-	protected AstNodeType type;
+	private static final long serialVersionUID = -7509745474094255803L;
+	protected AstNode[] tOperands;
+	protected String tMathSymbol;
+	protected String tProgramSymbol;
+	protected AstNodeType tType;
 
 
 	protected AstNode (AstNodeType type) {
-		this.type = type;
+		tType = type;
+		tOperands = null;
 	}
 
 
 	protected abstract boolean evaluate(HashMap<String, Boolean> hypothesis);
 
+
+	protected abstract AstNode rewriteOnlyJunctions();
+	
+
+	//protected abstract AstNode rewriteDnf();
+	
 
 	protected abstract AstNode rewriteNnf();
 	
@@ -34,21 +43,21 @@ public abstract class AstNode {
 
 
 	protected void setOperands(AstNode[] operands) {
-		this.operands = operands;
+		tOperands = operands;
 	}
 
 
 	protected void setOperandAt(AstNode operand, int index) {
-		this.operands[index] = operand;
+		tOperands[index] = operand;
 	}
 	
 
 	protected String getFormula() {
 		String formula = "";
-		for (int i = 0; i < this.type.nbOperands(); i += 1) {
-			formula += this.operands[i].getFormula();
+		for (int i = 0; i < tType.nbOperands(); i += 1) {
+			formula += tOperands[i].getFormula();
 		}
-		return formula + this.programSymbol;
+		return formula + tProgramSymbol;
 	}
 
 
@@ -62,14 +71,14 @@ public abstract class AstNode {
 		if (depth > 0 && unary) {
 			System.out.print("╶╴");
 		}
-		System.out.print(this.mathSymbol);
-		if (this.type.nbOperands() != 1) {
+		System.out.print(tMathSymbol);
+		if (tType.nbOperands() != 1) {
 			System.out.print("\n");
 		}
-		for (int i = this.type.nbOperands() - 1; i >= 0; i -= 1) {
-			this.operands[i].visualize(depth + 1,
+		for (int i = tType.nbOperands() - 1; i >= 0; i -= 1) {
+			tOperands[i].visualize(depth + 1,
 				branches + (i > 0 ? "│" : " "),
-				this.type.nbOperands() == 1 ? true : false);
+				tType.nbOperands() == 1 ? true : false);
 		}
 	}
 }

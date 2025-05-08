@@ -95,11 +95,7 @@ public class ReadySetBoole {
 
 
 	private void table(String formula) {
-		try {
-			Ex04.print_truth_table(formula);
-		} catch (Exception e) {
-			System.err.println(e);
-		}
+		Ex04.print_truth_table(formula);
 	}
 
 
@@ -138,10 +134,11 @@ public class ReadySetBoole {
 			System.err.println(e);
 			return;
 		}
-		System.out.println("Before: " + tree.getFormula());
-		tree.visualize();
-		tree.rewriteNnf();
-		System.out.println("\nAfter: " + tree.getFormula());
-		tree.visualize();
+		long startTime = System.currentTimeMillis();
+        byte[] table = tree.getTruthTable();
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Calculating truth table took " + (endTime - startTime) + 
+                " milliseconds.");
 	}
 }

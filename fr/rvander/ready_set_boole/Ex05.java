@@ -6,10 +6,15 @@ import fr.rvander.ready_set_boole.AST.*;
 public class Ex05 {
 
 	public static String negation_normal_form(String formula) throws AstException {
-		return AstBuilder
-			.getAstBuilder()
-			.astFromString(formula)
-			.rewriteNnf()
-			.getFormula();
+		try {
+			return AstBuilder
+				.getAstBuilder()
+				.astFromString(formula)
+				.rewriteNnf()
+				.getFormula();
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		return "";
 	}
 }

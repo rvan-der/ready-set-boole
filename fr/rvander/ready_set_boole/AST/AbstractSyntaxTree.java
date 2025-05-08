@@ -4,93 +4,164 @@ import fr.rvander.ready_set_boole.AST.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.lang.StringBuilder;
+import java.lang.Runtime;
+import java.io.Serializable;
+import java.util.concurrent.ForkJoinPool;
 
 
-public class AbstractSyntaxTree {
-	private AstNode root;
-	private String[] variables;
-	private int nbVars;
+public class AbstractSyntaxTree implements Serializable {
+	
+	private static final long serialVersionUID = 2876891991332221612L;
+	private AstNode tRoot;
+	private String[] tVariables;
+	private byte[] tTruthTable;
+	private int tNbVars;
 
 
 	protected AbstractSyntaxTree(AstNode root) {
-		this.root = root;
-		this.updateVariables();
+		tRoot = root;
+		tTruthTable = null;
+		updateVariables();
 	}
 
 
-	public boolean evaluate() {
-		if (this.variables.length != 0) {
-			System.err.println(
-				"Warning! Can't evaluate an expression containing variables. "
-				+ "False was returned by default.");
-			return false;
-		}
-		return this.root.evaluate(null);
+	public String[] getVariables() {
+		return tVariables;
 	}
 
 
-	protected final void updateVariables() {
-		HashSet<String> varsSet = this.root.getVariables(new HashSet<String>());
-		String[] variables = new String[0];
-		if (!varsSet.isEmpty()) {
-			variables = varsSet.toArray(variables);
-			Arrays.sort((Object[]) variables);
-		}
-		this.variables = variables;
-		this.nbVars = variables.length;
+	public int getNbVars() {
+		return tNbVars;
+	}
+
+
+	public boolean evaluate(HashMap<String, Boolean> hypothesis) {
+		return tRoot.evaluate(hypothesis);
 	}
 
 
 	public void printTruthTable() {
-		HashMap<String, Boolean> hypothesis = new HashMap<>();
+		byte[] table = getTruthTable();
 
+		// number of chars in one line of the table
+		// 4 chars per variable column (│.x.), last column (=) has 5 (│.x.│) and +1 for '\n'
+		long charsPerLine = tNbVars * 4 + 6;
+
+		// number of lines (not counting the header)
+		long nbLines = table.length;
+
+		// total number or chars to print (not counting the header)
+		long nbChars = charsPerLine * nbLines;
+
+		// set max buffer capacity (in chars) to the minimum
+		// between available memory and max integer value
+		// divide available memory by 2 because a char takes 2 bytes
+		long freeSpace = Runtime.getRuntime().freeMemory() / 2l;
+		long maxCapacity = freeSpace > (long)Integer.MAX_VALUE ? (long)Integer.MAX_VALUE : freeSpace;
+
+		// the number of lines fitting into maxCapacity
+		int maxLinesPerBuffer = (int)(maxCapacity / charsPerLine);
+
+		// set buffer capacity to the minimum between total character count
+		// and the max number of lines (times chars per line)
+		int bufferCapacity = nbChars <= maxCapacity ?
+							(int)nbChars : (int)(charsPerLine * maxLinesPerBuffer);
+
+		// the number of buffers needed to print all chars
+		int nbBuffers = (int)(nbChars / bufferCapacity)
+						+ (nbChars % bufferCapacity > 0 ? 1 : 0);
+
+		// the buffer
+		StringBuilder buffer = new StringBuilder(bufferCapacity);
+
+
+		// HEADER
 		System.out.print("│");
-		for (String varName : this.variables) {
+		for (String varName : tVariables) {
 			System.out.print(" " + varName + " │");
 		}
 		System.out.println(" = │");
 
 		System.out.print("│");
-		for (int i = 0; i < this.nbVars; i += 1) {
+		for (int i = 0; i < tNbVars; i += 1) {
 			System.out.print("───│");
 		}
 		System.out.println("───│");
 		
-		for (int values = 0; values < (1 << this.nbVars); values += 1) {
-			System.out.print("│");
-			for (int i = 0; i < this.nbVars; i += 1) {
-				int val = (values >>> (this.nbVars - i - 1)) & 1;
-				hypothesis.put(
-					this.variables[i],
-					val == 1 ? Boolean.valueOf(true) : Boolean.valueOf(false));
-				System.out.print(" " + val + " │");
+
+		// BODY
+		for (int iBuffer = 0; iBuffer < nbBuffers; iBuffer += 1) {
+			for (int values = iBuffer * maxLinesPerBuffer;
+				values < (iBuffer + 1) * maxLinesPerBuffer && values < nbLines;
+				values += 1) {
+				buffer.append("│");
+				for (int i = 0; i < tNbVars; i += 1) {
+					int val = (values >>> (tNbVars - i - 1)) & 1;
+					buffer.append(" " + val + " │");
+				}
+				buffer.append(" " + table[values] + " │\n");
 			}
-			System.out.println(" "
-				+ (this.root.evaluate(hypothesis) == true ? "1" : "0")
-				+ " │");
+			System.out.print(buffer.toString());
+			buffer.setLength(0);
 		}
 	}
 
 
+	public byte[] getTruthTable() {
+		if (tTruthTable == null) {
+			this.updateTruthTable();
+		}
+		return tTruthTable;
+	}
+
+
+	public AbstractSyntaxTree rewriteOnlyJunctions() {
+		tRoot = tRoot.rewriteOnlyJunctions();
+		return this;
+	}
+
+
 	public AbstractSyntaxTree rewriteNnf() {
-		this.root = this.root.rewriteNnf();
+		tRoot = tRoot.rewriteNnf();
 		return this;
 	}
 
 
 	public AbstractSyntaxTree rewriteCnf() {
-		this.root = this.root.rewriteNnf();
-		this.root = this.root.rewriteCnf();
+		tRoot = tRoot.rewriteNnf();
+		tRoot = tRoot.rewriteCnf();
 		return this;
 	}
 
 
 	public String getFormula() {
-		return this.root.getFormula();
+		return tRoot.getFormula();
 	}
 
 
 	public void visualize() {
-		this.root.visualize(0, "", false);
+		tRoot.visualize(0, "", false);
+	}
+
+
+	private void updateTruthTable() {
+		int length = 1 << tNbVars;
+		tTruthTable = new byte[length];
+
+        TruthTableCalculator calculator = new TruthTableCalculator(this, 0, length, tTruthTable);
+        ForkJoinPool pool = new ForkJoinPool();
+        pool.invoke(calculator);
+	}
+
+
+	private void updateVariables() {
+		HashSet<String> varsSet = tRoot.getVariables(new HashSet<String>());
+		tVariables = new String[0];
+		if (!varsSet.isEmpty()) {
+			tVariables = varsSet.toArray(tVariables);
+			Arrays.sort((Object[]) tVariables);
+		}
+		tNbVars = tVariables.length;
 	}
 }

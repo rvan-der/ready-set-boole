@@ -7,15 +7,15 @@ public enum AstNodeType {
 	PRIMITIVE (0),
 	VARIABLE (0);
 
-	private final int nbOperands;
+	private final int tNbOperands;
 
 
 	private AstNodeType(int nbOperands) {
-		this.nbOperands = nbOperands;
+		tNbOperands = nbOperands;
 	}
 
 
 	protected int nbOperands() {
-		return this.nbOperands;
+		return tNbOperands;
 	}
 }

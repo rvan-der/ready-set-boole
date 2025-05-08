@@ -7,14 +7,15 @@ import java.util.HashMap;
 
 public class PrimitiveNode extends AstNode {
 
-	private boolean value;
+	private static final long serialVersionUID = -4828465962740406325L;
+	private boolean tValue;
 
 
 	protected PrimitiveNode (boolean value) {
 		super(AstNodeType.PRIMITIVE);
-		this.value = value;
-		this.programSymbol = value == true ? "1" : "0";
-		this.mathSymbol = value == true ? "⊤" : "⊥";
+		tValue = value;
+		tProgramSymbol = value == true ? "1" : "0";
+		tMathSymbol = value == true ? "⊤" : "⊥";
 	}
 
 
@@ -24,7 +25,12 @@ public class PrimitiveNode extends AstNode {
 
 
 	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
-		return this.value;
+		return tValue;
+	}
+
+
+	protected AstNode rewriteOnlyJunctions() {
+		return this;
 	}
 
 
@@ -39,6 +45,6 @@ public class PrimitiveNode extends AstNode {
 
 
 	protected AstNode copySubtree() {
-		return new PrimitiveNode(this.value);
+		return new PrimitiveNode(tValue);
 	}
 }

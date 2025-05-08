@@ -30,9 +30,9 @@ public class AstBuilder {
 
 		for (char token : formula.toCharArray()) {
 
-			AstNode node = this.newNodeFromToken(token);
+			AstNode node = newNodeFromToken(token);
 			AstNode[] operands;
-			switch (node.type) {
+			switch (node.tType) {
 				case PRIMITIVE:
 				case VARIABLE:
 					stack.push(node);
@@ -43,7 +43,7 @@ public class AstBuilder {
 						operands[1] = stack.pop();
 						operands[0] = stack.pop();
 					} catch(NoSuchElementException e) {
-						throw new AstException("The forula is invalid.");
+						throw new AstException("The formula is invalid.");
 					}
 					node.setOperands(operands);
 					stack.push(node);
@@ -53,7 +53,7 @@ public class AstBuilder {
 					try {
 						operands[0] = stack.pop();
 					} catch(NoSuchElementException e) {
-						throw new AstException("The forula is invalid.");
+						throw new AstException("The formula is invalid.");
 					}
 					node.setOperands(operands);
 					stack.push(node);
