@@ -72,25 +72,12 @@ public class AstBuilder {
 
 
 	private AstNode newNodeFromToken(char token) throws AstException {
-		AstNode node;
-		switch (token) {
-		case '0':
-		case '1': node = new PrimitiveNode(token == '1' ? true : false); break;
-		case '&':
-		case '|':
-		case '^':
-		case '>':
-		case '=': node = new BinaryOperatorNode(token); break;
-		case '!': node = new UnaryOperatorNode(token); break;
-		default:
-			if (Character.isUpperCase(token)) {
-				node = new VariableNode(Character.toString(token));
-			}
-			else {
-				throw new AstException("Invalid token '" + token
-					+ "' found in the formula.");
+		for (AstNodeType type : AstNodeType.values()) {
+			if (type.containsToken(token)) {
+				return type.createNode(token);
 			}
 		}
-		return node;
+		throw new AstException(
+			"Invalid token '" + token + "' found in the formula.");
 	}
 }
