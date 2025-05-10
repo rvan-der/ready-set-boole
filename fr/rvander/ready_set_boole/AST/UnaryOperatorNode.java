@@ -8,22 +8,14 @@ import java.util.HashMap;
 public class UnaryOperatorNode extends AstNode {
 
 	private static final long serialVersionUID = 4659253008544725917L;
-	private char tOperator;
 
 
-	protected UnaryOperatorNode (char operator) {
-		super(AstNodeType.UNARY_OP);
-		tOperator = operator;
-		tProgramSymbol = String.valueOf(operator);
-		switch (operator) {
-		case '!': tMathSymbol = "¬"; break;
-		default: tMathSymbol = "[symbol not found]";
+	protected UnaryOperatorNode (String token) {
+		super(AstNodeType.UNARY_OP, token);
+		switch (token) {
+			case "!": tMathSymbol = "¬"; break;
+			default: tMathSymbol = "[NA]";
 		}
-	}
-
-
-	protected HashSet<String> getVariables(HashSet<String> varsSet) {
-		return tOperands[0].getVariables(varsSet);
 	}
 
 
@@ -31,12 +23,12 @@ public class UnaryOperatorNode extends AstNode {
 		boolean result;
 		boolean operand = tOperands[0].evaluate(hypothesis);
 
-		switch (tOperator) {
-		case '!': result = !operand ? true : false; break;
-		default:
-			System.err.println("Warning! Error during evaluation : unknown operator '"
-				+ tOperator + "'. False was returned by default.");
-			result = false;
+		switch (tToken) {
+			case "!": result = !operand ? true : false; break;
+			default:
+				System.err.println("Warning! Error during evaluation : unknown operator '"
+					+ tToken + "'. False was returned by default.");
+				result = false;
 		}
 
 		return result;
@@ -44,60 +36,26 @@ public class UnaryOperatorNode extends AstNode {
 
 
 	protected AstNode rewriteOnlyJunctions() {
+		tOperands[0] = tOperands[0].rewriteOnlyJunctions();
 		return this;
 	}
 
 
-	protected AstNode rewriteNnf() {
-		AstNode newSubtree;
+	protected AstNode rewriteNegations() {
+		AstNode operand = tOperands[0];
 
-		switch (tOperator) {
-			case '!':
-				switch (tOperands[0].tProgramSymbol) {
-					case "!":
-						newSubtree = tOperands[0].tOperands[0];
-						break;
-					case "|":
-						newSubtree = RewriteSubtrees.deMorgansLaws(
-							tOperands[0].tOperands[0],
-							tOperands[0].tOperands[1], '|');
-						break;
-					case "&":
-						// System.out.println("plop");
-						newSubtree = RewriteSubtrees.deMorgansLaws(
-							tOperands[0].tOperands[0],
-							tOperands[0].tOperands[1], '&');
-						// newSubtree.visualize(0, "");
-						break;
-					default:
-						newSubtree = null;
-				}
-				break;
-			default:
-				newSubtree = null;
+		if (operand.tToken.equals("!")) {
+			return operand.tOperands[0].rewriteNegations();
 		}
-
-		if (newSubtree == null) {
-			tOperands[0] = tOperands[0].rewriteNnf();
-			return this;
+		if ("&|".contains(operand.tToken)) {
+			return RewriteSubtrees
+				.deMorgansLaws(
+					operand.tOperands[0],
+					operand.tOperands[1],
+					operand.tToken)
+				.rewriteNegations();
 		}
-		else {
-			return newSubtree.rewriteNnf();
-		}
-	}
-
-
-	protected AstNode rewriteCnf() {
-		tOperands[0] = tOperands[0].rewriteCnf();
+		tOperands[0] = tOperands[0].rewriteNegations();
 		return this;
-	}
-
-
-	protected AstNode copySubtree() {
-		AstNode copy = new UnaryOperatorNode(tOperator);
-		AstNode[] operandsCopy = new AstNode[1];
-		operandsCopy[0] = tOperands[0].copySubtree();
-		copy.setOperands(operandsCopy);
-		return copy;
 	}
 }

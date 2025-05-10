@@ -7,9 +7,9 @@ public class RewriteSubtrees {
 
 	// A > B --> !A | B
 	protected static AstNode materialCondition(AstNode a, AstNode b) {
-		AstNode root = new BinaryOperatorNode('|');
+		AstNode root = new BinaryOperatorNode("|");
 		AstNode[] rootOperands = new AstNode[2];
-		AstNode negation = new UnaryOperatorNode('!');
+		AstNode negation = new UnaryOperatorNode("!");
 		AstNode[] negationOperands = new AstNode[1];
 		rootOperands[0] = negation;
 		rootOperands[1] = b;
@@ -23,7 +23,7 @@ public class RewriteSubtrees {
 	// !(A ^ B)
 	//   A = B --> (!A | B) & (!B | A)
 	protected static AstNode equivalence(AstNode a, AstNode b) {
-		AstNode root = new BinaryOperatorNode('&');
+		AstNode root = new BinaryOperatorNode("&");
 		AstNode[] rootOperands = new AstNode[2];
 		AstNode left = RewriteSubtrees.materialCondition(a, b);
 		AstNode right = RewriteSubtrees.materialCondition(b.copySubtree(), a.copySubtree());
@@ -35,10 +35,10 @@ public class RewriteSubtrees {
 
 	// !(A | B) --> !A & !B
 	// !(A & B) --> !A | !B
-	protected static AstNode deMorgansLaws(AstNode a, AstNode b, char operator) {
-		AstNode root = new BinaryOperatorNode(operator == '|' ? '&' : '|');
-		AstNode left = new UnaryOperatorNode('!');
-		AstNode right = new UnaryOperatorNode('!');
+	protected static AstNode deMorgansLaws(AstNode a, AstNode b, String operator) {
+		AstNode root = new BinaryOperatorNode(operator.equals("|") ? "&" : "|");
+		AstNode left = new UnaryOperatorNode("!");
+		AstNode right = new UnaryOperatorNode("!");
 		AstNode[] rootOperands = new AstNode[2];
 		AstNode[] leftOperands = new AstNode[1];
 		AstNode[] rightOperands = new AstNode[1];
@@ -53,8 +53,8 @@ public class RewriteSubtrees {
 	}
 
 	// A | (B & C) --> (A | B) & (A | C)
-	protected static AstNode distribution(AstNode a, AstNode b, AstNode c, char operator) {
-		AstNode root = new BinaryOperatorNode(operator == '|' ? '&' : '|');
+	protected static AstNode distribution(AstNode a, AstNode b, AstNode c, String operator) {
+		AstNode root = new BinaryOperatorNode(operator.equals("|") ? "&" : "|");
 		AstNode left = new BinaryOperatorNode(operator);
 		AstNode right = new BinaryOperatorNode(operator);
 		AstNode[] rootOperands = new AstNode[2];
@@ -75,11 +75,11 @@ public class RewriteSubtrees {
 
 	// A ^ B --> (!A & B) | (A & !B)
 	protected static AstNode exclusiveDisjunction(AstNode a, AstNode b) {
-		AstNode root = new BinaryOperatorNode('|');
-		AstNode left = new BinaryOperatorNode('&');
-		AstNode right = new BinaryOperatorNode('&');
-		AstNode aNot = new UnaryOperatorNode('!');
-		AstNode bNot = new UnaryOperatorNode('!');
+		AstNode root = new BinaryOperatorNode("|");
+		AstNode left = new BinaryOperatorNode("&");
+		AstNode right = new BinaryOperatorNode("&");
+		AstNode aNot = new UnaryOperatorNode("!");
+		AstNode bNot = new UnaryOperatorNode("!");
 		AstNode[] rootOperands = new AstNode[2];
 		AstNode[] leftOperands = new AstNode[2];
 		AstNode[] rightOperands = new AstNode[2];

@@ -101,7 +101,10 @@ public class ReadySetBoole {
 
 	private void tree(String formula) {
 		try {
-			AstBuilder.getAstBuilder().astFromString(formula).visualize();
+			AstBuilder
+			.getAstBuilder()
+			.astFromString(formula)
+			.visualize();
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -120,6 +123,21 @@ public class ReadySetBoole {
 	private void cnf(String formula) {
 		try {
 			System.out.println(Ex06.conjunctive_normal_form(formula));
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
+
+
+	private void junctions(String formula) {
+		try {
+			AbstractSyntaxTree tree = AstBuilder
+									.getAstBuilder()
+									.astFromString(formula);
+			tree.visualize();
+			tree.rewriteOnlyJunctions();
+			System.out.println("\n" + tree.getFormula() + "\n");
+			tree.visualize();
 		} catch (Exception e) {
 			System.err.println(e);
 		}

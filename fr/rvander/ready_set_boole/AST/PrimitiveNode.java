@@ -11,16 +11,10 @@ public class PrimitiveNode extends AstNode {
 	private boolean tValue;
 
 
-	protected PrimitiveNode (boolean value) {
-		super(AstNodeType.PRIMITIVE);
-		tValue = value;
-		tProgramSymbol = value == true ? "1" : "0";
-		tMathSymbol = value == true ? "⊤" : "⊥";
-	}
-
-
-	protected HashSet<String> getVariables(HashSet<String> varsSet) {
-		return varsSet;
+	protected PrimitiveNode (String token) {
+		super(AstNodeType.PRIMITIVE, token);
+		tValue = token.equals("1") ? true : false;
+		tMathSymbol = token.equals("1") ? "⊤" : "⊥";
 	}
 
 
@@ -34,17 +28,7 @@ public class PrimitiveNode extends AstNode {
 	}
 
 
-	protected AstNode rewriteNnf() {
+	protected AstNode rewriteNegations() {
 		return this;
-	}
-
-
-	protected AstNode rewriteCnf() {
-		return this;
-	}
-
-
-	protected AstNode copySubtree() {
-		return new PrimitiveNode(tValue);
 	}
 }

@@ -8,20 +8,11 @@ import java.util.HashMap;
 public class VariableNode extends AstNode {
 
 	private static final long serialVersionUID = -3433790913846854619L;
-	protected String tName;
 
 
-	protected VariableNode (String name) {
-		super(AstNodeType.VARIABLE);
-		tName = name;
-		tProgramSymbol = name;
-		tMathSymbol = name;
-	}
-
-
-	protected HashSet<String> getVariables(HashSet<String> varsSet) {
-		varsSet.add(tName);
-		return varsSet;
+	protected VariableNode (String token) {
+		super(AstNodeType.VARIABLE, token);
+		tMathSymbol = token;
 	}
 
 
@@ -32,7 +23,7 @@ public class VariableNode extends AstNode {
 				+ "containing variables. False was returned by default.");
 			return false;
 		}
-		Boolean result = hypothesis.get(tName);
+		Boolean result = hypothesis.get(tToken);
 		if (result == null) {
 			System.err.println(
 				"Warning! Invalid hypothesis during evaluation of formula "
@@ -48,17 +39,7 @@ public class VariableNode extends AstNode {
 	}
 
 
-	protected AstNode rewriteNnf() {
+	protected AstNode rewriteNegations() {
 		return this;
-	}
-
-
-	protected AstNode rewriteCnf() {
-		return this;
-	}
-
-
-	protected AstNode copySubtree() {
-		return new VariableNode(tName);
 	}
 }

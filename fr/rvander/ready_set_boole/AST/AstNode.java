@@ -10,13 +10,14 @@ public abstract class AstNode implements Serializable {
 
 	private static final long serialVersionUID = -7509745474094255803L;
 	protected AstNode[] tOperands;
+	protected String tToken;
 	protected String tMathSymbol;
-	protected String tProgramSymbol;
 	protected AstNodeType tType;
 
 
-	protected AstNode (AstNodeType type) {
+	protected AstNode (AstNodeType type, String token) {
 		tType = type;
+		tToken = token;
 		tOperands = null;
 	}
 
@@ -25,30 +26,26 @@ public abstract class AstNode implements Serializable {
 
 
 	protected abstract AstNode rewriteOnlyJunctions();
-	
-
-	//protected abstract AstNode rewriteDnf();
-	
-
-	protected abstract AstNode rewriteNnf();
-	
-
-	protected abstract AstNode rewriteCnf();
 
 
-	protected abstract AstNode copySubtree();
+	protected abstract AstNode rewriteNegations();
 
 
-	protected abstract HashSet<String> getVariables(HashSet<String> varsSet);
+	protected HashSet<String> getVariables(HashSet<String> varsSet) {
+		if (tType.nbOperands() > 0) {
+			for (AstNode operand : tOperands) {
+				varsSet = operand.getVariables(varsSet);
+			}
+		}
+		if (tType == AstNodeType.VARIABLE) {
+			varsSet.add(tToken);
+		}
+		return varsSet;
+	}
 
 
 	protected void setOperands(AstNode[] operands) {
 		tOperands = operands;
-	}
-
-
-	protected void setOperandAt(AstNode operand, int index) {
-		tOperands[index] = operand;
 	}
 	
 
@@ -57,7 +54,7 @@ public abstract class AstNode implements Serializable {
 		for (int i = 0; i < tType.nbOperands(); i += 1) {
 			formula += tOperands[i].getFormula();
 		}
-		return formula + tProgramSymbol;
+		return formula + tToken;
 	}
 
 
@@ -80,5 +77,18 @@ public abstract class AstNode implements Serializable {
 				branches + (i > 0 ? "│" : " "),
 				tType.nbOperands() == 1 ? true : false);
 		}
+	}
+	
+
+	protected AstNode copySubtree() {
+		AstNode copy = tType.createNode(tToken);
+		if (tType.nbOperands() > 0) {
+			AstNode[] operandsCopy = new AstNode[tType.nbOperands()];
+			for (int i = 0; i < tType.nbOperands(); i += 1) {
+				operandsCopy[i] = tOperands[i].copySubtree();
+				copy.setOperands(operandsCopy);
+			}
+		}
+		return copy;
 	}
 }

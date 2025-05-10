@@ -8,27 +8,18 @@ import java.util.HashMap;
 public class BinaryOperatorNode extends AstNode {
 
 	private static final long serialVersionUID = -1385074740534226194L;
-	private char tOperator;
 
 
-	protected BinaryOperatorNode (char operator) {
-		super(AstNodeType.BINARY_OP);
-		tOperator = operator;
-		tProgramSymbol = String.valueOf(operator);
-		switch (operator) {
-			case '&': tMathSymbol = "∧"; break;
-			case '|': tMathSymbol = "∨"; break;
-			case '^': tMathSymbol = "⊕"; break;
-			case '>': tMathSymbol = "⇒"; break;
-			case '=': tMathSymbol = "⇔"; break;
-			default: tMathSymbol = "[symbol not found]";
+	protected BinaryOperatorNode (String token) {
+		super(AstNodeType.BINARY_OP, token);
+		switch (token) {
+			case "&": tMathSymbol = "∧"; break;
+			case "|": tMathSymbol = "∨"; break;
+			case "^": tMathSymbol = "⊕"; break;
+			case ">": tMathSymbol = "⇒"; break;
+			case "=": tMathSymbol = "⇔"; break;
+			default: tMathSymbol = "[NA]";
 		}
-	}
-
-
-	protected HashSet<String> getVariables(HashSet<String> varsSet) {
-		varsSet = tOperands[0].getVariables(varsSet);
-		return tOperands[1].getVariables(varsSet);
 	}
 
 
@@ -37,15 +28,15 @@ public class BinaryOperatorNode extends AstNode {
 		boolean left = tOperands[0].evaluate(hypothesis);
 		boolean right = tOperands[1].evaluate(hypothesis);
 
-		switch (tOperator) {
-			case '&': result = left && right ? true : false; break;
-			case '|': result = left || right ? true : false; break;
-			case '^': result = !left && right || left && !right ? true : false; break;
-			case '>': result = !left || right ? true : false; break;
-			case '=': result = left == right ? true : false; break;
+		switch (tToken) {
+			case "&": result = left && right ? true : false; break;
+			case "|": result = left || right ? true : false; break;
+			case "^": result = !left && right || left && !right ? true : false; break;
+			case ">": result = !left || right ? true : false; break;
+			case "=": result = left == right ? true : false; break;
 			default:
 				System.err.println("Warning! Error at evaluation : unknown operator '"
-					+ tOperator + "'. False was returned by default.");
+					+ tToken + "'. False was returned by default.");
 				result = false;
 		}
 
@@ -56,95 +47,32 @@ public class BinaryOperatorNode extends AstNode {
 	protected AstNode rewriteOnlyJunctions() {
 		AstNode newSubtree;
 
-		switch (tOperator) {
-			case '>':
+		switch (tToken) {
+			case ">":
 				newSubtree = RewriteSubtrees.materialCondition(
 					tOperands[0], tOperands[1]);
 				break;
-			case '=':
+			case "=":
 				newSubtree = RewriteSubtrees.equivalence(
 					tOperands[0], tOperands[1]);
 				break;
-			case '^':
+			case "^":
 				newSubtree = RewriteSubtrees.exclusiveDisjunction(
 					tOperands[0], tOperands[1]);
 				break;
 			default:
-				newSubtree = null;
+				tOperands[0] = tOperands[0].rewriteOnlyJunctions();
+				tOperands[1] = tOperands[1].rewriteOnlyJunctions();
+				return this;
 		}
 
-		if (newSubtree == null) {
-			tOperands[0] = tOperands[0].rewriteNnf();
-			tOperands[1] = tOperands[1].rewriteNnf();
-			return this;
-		}
-
-		return newSubtree.rewriteNnf();
+		return newSubtree.rewriteOnlyJunctions();
 	}
 
 
-	
-
-
-	protected AstNode rewriteNnf() {
-		AstNode newSubtree;
-
-		switch (tOperator) {
-			case '>':
-				newSubtree = RewriteSubtrees.materialCondition(
-					tOperands[0], tOperands[1]);
-				break;
-			case '=':
-				newSubtree = RewriteSubtrees.equivalence(
-					tOperands[0], tOperands[1]);
-				break;
-			default:
-				newSubtree = null;
-		}
-
-		if (newSubtree == null) {
-			tOperands[0] = tOperands[0].rewriteNnf();
-			tOperands[1] = tOperands[1].rewriteNnf();
-			return this;
-		}
-		else {
-			return newSubtree.rewriteNnf();
-		}
-	}
-
-
-	protected AstNode rewriteCnf() {
-		AstNode newSubtree;
-		AstNode a, b, c;
-
-		if (tOperator == '|') {
-			if (tOperands[0].tProgramSymbol.equals("&")) {
-				a = tOperands[1];
-				b = tOperands[0].tOperands[0];
-				c = tOperands[0].tOperands[1];
-				newSubtree = RewriteSubtrees.distribution(a, b, c, '|');
-				return newSubtree.rewriteCnf();
-			}
-			if (tOperands[1].tProgramSymbol.equals("&")) {
-				a = tOperands[0];
-				b = tOperands[1].tOperands[0];
-				c = tOperands[1].tOperands[1];
-				newSubtree = RewriteSubtrees.distribution(a, b, c, '|');
-				return newSubtree.rewriteCnf();
-			}
-		}
-		tOperands[0] = tOperands[0].rewriteNnf();
-		tOperands[1] = tOperands[1].rewriteNnf();
+	protected AstNode rewriteNegations() {
+		tOperands[0] = tOperands[0].rewriteNegations();
+		tOperands[1] = tOperands[1].rewriteNegations();
 		return this;
-	}
-
-
-	protected AstNode copySubtree() {
-		AstNode copy = new BinaryOperatorNode(tOperator);
-		AstNode[] operandsCopy = new AstNode[2];
-		operandsCopy[0] = tOperands[0].copySubtree();
-		operandsCopy[1] = tOperands[1].copySubtree();
-		copy.setOperands(operandsCopy);
-		return copy;
 	}
 }

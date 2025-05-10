@@ -48,10 +48,10 @@ public class AbstractSyntaxTree implements Serializable {
 		// 4 chars per variable column (│.x.), last column (=) has 5 (│.x.│) and +1 for '\n'
 		long charsPerLine = tNbVars * 4 + 6;
 
-		// number of lines (not counting the header)
+		// number of lines (not counting header and footer)
 		long nbLines = table.length;
 
-		// total number or chars to print (not counting the header)
+		// total number or chars to print (not counting header and footer)
 		long nbChars = charsPerLine * nbLines;
 
 		// set max buffer capacity (in chars) to the minimum
@@ -77,34 +77,45 @@ public class AbstractSyntaxTree implements Serializable {
 
 
 		// HEADER
-		System.out.print("│");
-		for (String varName : tVariables) {
-			System.out.print(" " + varName + " │");
+		System.out.print("┌");
+		for (int i = 0; i < tNbVars - 1; i++) {
+			System.out.print("───┬");
 		}
-		System.out.println(" = │");
+		System.out.println("───╥───┐");
 
-		System.out.print("│");
-		for (int i = 0; i < tNbVars; i += 1) {
-			System.out.print("───│");
+		for (String varName : tVariables) {
+			System.out.print("│ " + varName + " ");
 		}
-		System.out.println("───│");
+		System.out.println("║ = │");
+
+		System.out.print("├");
+		for (int i = 0; i < tNbVars - 1; i++) {
+			System.out.print("───┼");
+		}
+		System.out.println("───╫───┤");
 		
 
 		// BODY
-		for (int iBuffer = 0; iBuffer < nbBuffers; iBuffer += 1) {
+		for (int iBuffer = 0; iBuffer < nbBuffers; iBuffer++) {
 			for (int values = iBuffer * maxLinesPerBuffer;
 				values < (iBuffer + 1) * maxLinesPerBuffer && values < nbLines;
 				values += 1) {
-				buffer.append("│");
 				for (int i = 0; i < tNbVars; i += 1) {
 					int val = (values >>> (tNbVars - i - 1)) & 1;
-					buffer.append(" " + val + " │");
+					buffer.append("│ " + val + " ");
 				}
-				buffer.append(" " + table[values] + " │\n");
+				buffer.append("║ " + table[values] + " │\n");
 			}
 			System.out.print(buffer.toString());
 			buffer.setLength(0);
 		}
+
+		// FOOTER
+		System.out.print("└");
+		for (int i = 0; i < tNbVars - 1; i++) {
+			System.out.print("───┴");
+		}
+		System.out.println("───╨───┘");
 	}
 
 
@@ -123,14 +134,13 @@ public class AbstractSyntaxTree implements Serializable {
 
 
 	public AbstractSyntaxTree rewriteNnf() {
-		tRoot = tRoot.rewriteNnf();
+		tRoot = tRoot.rewriteOnlyJunctions();
+		tRoot = tRoot.rewriteNegations();
 		return this;
 	}
 
 
 	public AbstractSyntaxTree rewriteCnf() {
-		tRoot = tRoot.rewriteNnf();
-		tRoot = tRoot.rewriteCnf();
 		return this;
 	}
 

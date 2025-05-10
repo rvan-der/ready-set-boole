@@ -3,23 +3,23 @@ package fr.rvander.ready_set_boole.AST;
 
 public enum AstNodeType {
 	BINARY_OP (2, "&|^>=") {
-		protected AstNode createNode(char token) {
+		protected AstNode createNode(String token) {
 			return new BinaryOperatorNode(token);
 		}
 	},
 	UNARY_OP (1, "!") {
-		protected AstNode createNode(char token) {
+		protected AstNode createNode(String token) {
 			return new UnaryOperatorNode(token);
 		}
 	},
 	PRIMITIVE (0, "01") {
-		protected AstNode createNode(char token) {
-			return new PrimitiveNode(token == '1' ? true : false);
+		protected AstNode createNode(String token) {
+			return new PrimitiveNode(token);
 		}
 	},
 	VARIABLE (0, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-		protected AstNode createNode(char token) {
-			return new VariableNode(Character.toString(token));
+		protected AstNode createNode(String token) {
+			return new VariableNode(token);
 		}
 	};
 
@@ -38,13 +38,10 @@ public enum AstNodeType {
 	}
 
 
-	protected boolean containsToken(char token) {
-		if (tTokens.indexOf((int)token) == -1) {
-			return false;
-		}
-		return true;
+	protected boolean containsToken(String token) {
+		return tTokens.contains(token);
 	}
 
 
-	protected abstract AstNode createNode(char token);
+	protected abstract AstNode createNode(String token);
 }

@@ -30,7 +30,7 @@ public class AstBuilder {
 
 		for (char token : formula.toCharArray()) {
 
-			AstNode node = newNodeFromToken(token);
+			AstNode node = newNodeFromToken(String.valueOf(token));
 			AstNode[] operands;
 			switch (node.tType) {
 				case PRIMITIVE:
@@ -71,7 +71,7 @@ public class AstBuilder {
 	}
 
 
-	private AstNode newNodeFromToken(char token) throws AstException {
+	private AstNode newNodeFromToken(String token) throws AstException {
 		for (AstNodeType type : AstNodeType.values()) {
 			if (type.containsToken(token)) {
 				return type.createNode(token);
