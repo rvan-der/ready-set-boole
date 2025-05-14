@@ -25,10 +25,44 @@ public abstract class AstNode implements Serializable {
 	protected abstract boolean evaluate(HashMap<String, Boolean> hypothesis);
 
 
-	protected abstract AstNode rewriteOnlyJunctions();
+	protected AstNode rewriteOnlyJunctions() {
+		for (int i = 0; i < tType.nbOperands(); i++) {
+			tOperands[i] = tOperands[i].rewriteOnlyJunctions();
+		}
+		return this;
+	}
 
 
-	protected abstract AstNode rewriteNegations();
+	protected AstNode rewriteNegations() {
+		for (int i = 0; i < tType.nbOperands(); i++) {
+			tOperands[i] = tOperands[i].rewriteNegations();
+		}
+		return this;
+	}
+
+
+	protected AstNode distributeJunctions(String operator) {
+		for (int i = 0; i < tType.nbOperands(); i++) {
+			tOperands[i] = tOperands[i].distributeJunctions(operator);
+		}
+		return this;
+	}
+
+
+	protected AstNode simplify() {
+		for (int i = 0; i < tType.nbOperands(); i++) {
+			tOperands[i] = tOperands[i].simplify();
+		}
+		return this;
+	}
+
+
+	protected AstNode alignJunctions() {
+		for (int i = 0; i < tType.nbOperands(); i++) {
+			tOperands[i] = tOperands[i].alignJunctions();
+		}
+		return this;
+	}
 
 
 	protected HashSet<String> getVariables(HashSet<String> varsSet) {
@@ -55,6 +89,50 @@ public abstract class AstNode implements Serializable {
 			formula += tOperands[i].getFormula();
 		}
 		return formula + tToken;
+	}
+
+
+	protected boolean isLitteral() {
+		if (tType == AstNodeType.PRIMITIVE || tType == AstNodeType.VARIABLE) {
+			return true;
+		}
+		if (tType == AstNodeType.UNARY_OP && tToken.equals("!")) {
+			return tOperands[0].isLitteral();
+		}
+		return false;
+	}
+
+
+	protected boolean isVariable() {
+		if (tType == AstNodeType.VARIABLE) {
+			return true;
+		}
+		if (tType == AstNodeType.UNARY_OP && tToken.equals("!")) {
+			return tOperands[0].isVariable();
+		}
+		return false;
+	}
+
+
+	protected String getVariableName() {
+		if (tType == AstNodeType.VARIABLE) {
+			return tToken;
+		}
+		if (tType == AstNodeType.UNARY_OP && tToken.equals("!")) {
+			return tOperands[0].getVariableName();
+		}
+		return null;
+	}
+
+
+	protected boolean isPrimitive() {
+		if (tType == AstNodeType.PRIMITIVE) {
+			return true;
+		}
+		if (tType == AstNodeType.UNARY_OP && tToken.equals("!")) {
+			return tOperands[0].isPrimitive();
+		}
+		return false;
 	}
 
 

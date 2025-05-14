@@ -21,14 +21,4 @@ public class PrimitiveNode extends AstNode {
 	protected boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		return tValue;
 	}
-
-
-	protected AstNode rewriteOnlyJunctions() {
-		return this;
-	}
-
-
-	protected AstNode rewriteNegations() {
-		return this;
-	}
 }

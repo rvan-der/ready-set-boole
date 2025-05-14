@@ -73,7 +73,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void gray_code(String n) {
+	private void graycode(String n) {
 		int nInt;
 		try {
 			nInt = Integer.parseUnsignedInt(n);
@@ -120,24 +120,15 @@ public class ReadySetBoole {
 	}
 
 
+	//good formula to test rewriting rules 'ABC||DE&F=>!'
 	private void cnf(String formula) {
 		try {
 			System.out.println(Ex06.conjunctive_normal_form(formula));
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
-
-
-	private void junctions(String formula) {
-		try {
-			AbstractSyntaxTree tree = AstBuilder
-									.getAstBuilder()
-									.astFromString(formula);
-			tree.visualize();
-			tree.rewriteOnlyJunctions();
-			System.out.println("\n" + tree.getFormula() + "\n");
-			tree.visualize();
+			AstBuilder
+			.getAstBuilder()
+			.astFromString(formula)
+			.rewriteCnf()
+			.visualize();
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -152,11 +143,6 @@ public class ReadySetBoole {
 			System.err.println(e);
 			return;
 		}
-		long startTime = System.currentTimeMillis();
-        byte[] table = tree.getTruthTable();
-        long endTime = System.currentTimeMillis();
-
-        System.out.println("Calculating truth table took " + (endTime - startTime) + 
-                " milliseconds.");
+		// feel free to test (and/or abuse) the AST package
 	}
 }

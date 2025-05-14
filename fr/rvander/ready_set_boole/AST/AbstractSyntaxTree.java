@@ -127,12 +127,6 @@ public class AbstractSyntaxTree implements Serializable {
 	}
 
 
-	public AbstractSyntaxTree rewriteOnlyJunctions() {
-		tRoot = tRoot.rewriteOnlyJunctions();
-		return this;
-	}
-
-
 	public AbstractSyntaxTree rewriteNnf() {
 		tRoot = tRoot.rewriteOnlyJunctions();
 		tRoot = tRoot.rewriteNegations();
@@ -141,6 +135,11 @@ public class AbstractSyntaxTree implements Serializable {
 
 
 	public AbstractSyntaxTree rewriteCnf() {
+		tRoot = tRoot.rewriteOnlyJunctions();
+		tRoot = tRoot.rewriteNegations();
+		tRoot = tRoot.distributeJunctions("|");
+		tRoot = tRoot.simplify();
+		tRoot = tRoot.alignJunctions();
 		return this;
 	}
 

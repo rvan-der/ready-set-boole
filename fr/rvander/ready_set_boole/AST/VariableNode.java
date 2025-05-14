@@ -32,14 +32,4 @@ public class VariableNode extends AstNode {
 		}
 		return result.booleanValue();
 	}
-
-
-	protected AstNode rewriteOnlyJunctions() {
-		return this;
-	}
-
-
-	protected AstNode rewriteNegations() {
-		return this;
-	}
 }

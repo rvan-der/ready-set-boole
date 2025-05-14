@@ -35,12 +35,7 @@ public class UnaryOperatorNode extends AstNode {
 	}
 
 
-	protected AstNode rewriteOnlyJunctions() {
-		tOperands[0] = tOperands[0].rewriteOnlyJunctions();
-		return this;
-	}
-
-
+	@Override
 	protected AstNode rewriteNegations() {
 		AstNode operand = tOperands[0];
 

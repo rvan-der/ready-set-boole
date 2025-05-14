@@ -5,7 +5,7 @@ import fr.rvander.ready_set_boole.AST.*;
 
 public class Ex06 {
 
-	public static String conjunctive_normal_form(String formula) throws AstException {
+	public static String conjunctive_normal_form(String formula) {
 		try {
 			return AstBuilder
 				.getAstBuilder()
