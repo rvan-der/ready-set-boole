@@ -55,6 +55,7 @@ public class ReadySetBoole {
 			System.err.println(e);
 			return;
 		}
+
 		System.out.println(Integer.toUnsignedString(Ex00.adder(aInt, bInt)));
 	}
 
@@ -69,6 +70,7 @@ public class ReadySetBoole {
 			System.err.println(e);
 			return;
 		}
+
 		System.out.println(Integer.toUnsignedString(Ex01.multiplier(aInt, bInt)));
 	}
 
@@ -81,21 +83,33 @@ public class ReadySetBoole {
 			System.err.println(e);
 			return;
 		}
+
 		System.out.println(Integer.toUnsignedString(Ex02.gray_code(nInt)));
 	}
 
 
 	private void evaluate(String formula) {
-		try {
-			System.out.println(Ex03.eval_formula(formula));
-		} catch (Exception e) {
-			System.err.println(e);
-		}
+		System.out.println(Ex03.eval_formula(formula));
 	}
 
 
 	private void table(String formula) {
 		Ex04.print_truth_table(formula);
+	}
+
+
+	private void nnf(String formula) {
+		System.out.println(Ex05.negation_normal_form(formula));
+	}
+
+
+	private void cnf(String formula) {
+		System.out.println(Ex06.conjunctive_normal_form(formula));
+	}
+
+
+	private void sat(String formula) {
+		System.out.println(Ex07.sat(formula));
 	}
 
 
@@ -111,34 +125,11 @@ public class ReadySetBoole {
 	}
 
 
-	private void nnf(String formula) {
-		try {
-			System.out.println(Ex05.negation_normal_form(formula));
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
-
-
-	//good formula to test rewriting rules 'ABC||DE&F=>!'
-	private void cnf(String formula) {
-		try {
-			System.out.println(Ex06.conjunctive_normal_form(formula));
-			AstBuilder
-			.getAstBuilder()
-			.astFromString(formula)
-			.rewriteCnf()
-			.visualize();
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
-
-
 	private void test(String formula) {
 		AbstractSyntaxTree tree;
 		try {
 			tree = AstBuilder.getAstBuilder().astFromString(formula);
+			byte[] table = tree.getTruthTable();
 		} catch (Exception e) {
 			System.err.println(e);
 			return;

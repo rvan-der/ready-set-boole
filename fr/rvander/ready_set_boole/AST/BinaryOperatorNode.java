@@ -128,8 +128,6 @@ public class BinaryOperatorNode extends AstNode {
 		AstNode left = tOperands[0];
 		AstNode right = tOperands[1];
 
-		// must be a junction and
-		// at least one of left or right must be a litteral (primitive or variable)
 		if (!"&|".contains(tToken) || !left.isLitteral() && !right.isLitteral()) {
 			return this;
 		}

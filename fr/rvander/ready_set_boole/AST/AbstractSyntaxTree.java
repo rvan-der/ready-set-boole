@@ -8,6 +8,7 @@ import java.lang.StringBuilder;
 import java.lang.Runtime;
 import java.io.Serializable;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class AbstractSyntaxTree implements Serializable {
@@ -38,6 +39,73 @@ public class AbstractSyntaxTree implements Serializable {
 
 	public boolean evaluate(HashMap<String, Boolean> hypothesis) {
 		return tRoot.evaluate(hypothesis);
+	}
+
+
+	public byte[] getTruthTable() {
+		if (tTruthTable == null) {
+			this.updateTruthTable();
+		}
+		return tTruthTable;
+	}
+
+
+	public AbstractSyntaxTree rewriteNnf() {
+		tRoot = tRoot.rewriteOnlyJunctions();
+		tRoot = tRoot.rewriteNegations();
+		return this;
+	}
+
+
+	public AbstractSyntaxTree rewriteCnf() {
+		tRoot = tRoot.rewriteOnlyJunctions();
+		tRoot = tRoot.rewriteNegations();
+		tRoot = tRoot.distributeJunctions("|");
+		tRoot = tRoot.simplify();
+		tRoot = tRoot.alignJunctions();
+		return this;
+	}
+
+
+	public String getFormula() {
+		return tRoot.getFormula();
+	}
+
+
+	public void visualize() {
+		tRoot.visualize(0, "", false);
+	}
+
+
+	public boolean isSatisfiable() {
+		AtomicBoolean result = new AtomicBoolean(false);
+		SatCalculator calculator =
+			new SatCalculator(this, 0, 1 << tNbVars, tTruthTable, result);
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        pool.invoke(calculator);
+        return result.get();
+	}
+
+
+	private void updateTruthTable() {
+		int length = 1 << tNbVars;
+		tTruthTable = new byte[length];
+
+        TruthTableCalculator calculator =
+        	new TruthTableCalculator(this, 0, length, tTruthTable);
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        pool.invoke(calculator);
+	}
+
+
+	private void updateVariables() {
+		HashSet<String> varsSet = tRoot.getVariables(new HashSet<String>());
+		tVariables = new String[0];
+		if (!varsSet.isEmpty()) {
+			tVariables = varsSet.toArray(tVariables);
+			Arrays.sort((Object[]) tVariables);
+		}
+		tNbVars = tVariables.length;
 	}
 
 
@@ -116,61 +184,5 @@ public class AbstractSyntaxTree implements Serializable {
 			System.out.print("───┴");
 		}
 		System.out.println("───╨───┘");
-	}
-
-
-	public byte[] getTruthTable() {
-		if (tTruthTable == null) {
-			this.updateTruthTable();
-		}
-		return tTruthTable;
-	}
-
-
-	public AbstractSyntaxTree rewriteNnf() {
-		tRoot = tRoot.rewriteOnlyJunctions();
-		tRoot = tRoot.rewriteNegations();
-		return this;
-	}
-
-
-	public AbstractSyntaxTree rewriteCnf() {
-		tRoot = tRoot.rewriteOnlyJunctions();
-		tRoot = tRoot.rewriteNegations();
-		tRoot = tRoot.distributeJunctions("|");
-		tRoot = tRoot.simplify();
-		tRoot = tRoot.alignJunctions();
-		return this;
-	}
-
-
-	public String getFormula() {
-		return tRoot.getFormula();
-	}
-
-
-	public void visualize() {
-		tRoot.visualize(0, "", false);
-	}
-
-
-	private void updateTruthTable() {
-		int length = 1 << tNbVars;
-		tTruthTable = new byte[length];
-
-        TruthTableCalculator calculator = new TruthTableCalculator(this, 0, length, tTruthTable);
-        ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(calculator);
-	}
-
-
-	private void updateVariables() {
-		HashSet<String> varsSet = tRoot.getVariables(new HashSet<String>());
-		tVariables = new String[0];
-		if (!varsSet.isEmpty()) {
-			tVariables = varsSet.toArray(tVariables);
-			Arrays.sort((Object[]) tVariables);
-		}
-		tNbVars = tVariables.length;
 	}
 }

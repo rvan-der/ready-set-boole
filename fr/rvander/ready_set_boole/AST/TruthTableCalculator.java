@@ -8,22 +8,22 @@ import java.util.concurrent.RecursiveAction;
 public class TruthTableCalculator extends RecursiveAction {
 
 	private static final long serialVersionUID = -8985174449365364102L;
-    private AbstractSyntaxTree tTree;
-    private int tStart;
-    private int tLength;
-    private byte[] tTable;
-    private final int tThreshold = 1 << 17;
+	private AbstractSyntaxTree tTree;
+	private int tStart;
+	private int tLength;
+	private byte[] tTable;
+	private final int tThreshold = 1 << 17;
 
 
-    public TruthTableCalculator(AbstractSyntaxTree tree, int start, int length, byte[] table) {
-        tTree = tree;
-        tStart = start;
-        tLength = length;
-        tTable = table;
-    }
+	public TruthTableCalculator(AbstractSyntaxTree tree, int start, int length, byte[] table) {
+		tTree = tree;
+		tStart = start;
+		tLength = length;
+		tTable = table;
+	}
 
 
-    protected void computeDirectly() {
+	protected void computeDirectly() {
 		HashMap<String, Boolean> hypothesis = new HashMap<>();
 		int nbVars = tTree.getNbVars();
 		String[] variables = tTree.getVariables();
@@ -36,17 +36,17 @@ public class TruthTableCalculator extends RecursiveAction {
 			}
 			tTable[values] = (byte)(tTree.evaluate(hypothesis) == true ? 1 : 0);
 		}
-    }
+	}
 
 
-    @Override
-    protected void compute() {
-        if (tLength < tThreshold) {
-            computeDirectly();
-            return;
-        }
-        int split = tLength / 2;
-        invokeAll(new TruthTableCalculator(tTree, tStart, split, tTable),
-                new TruthTableCalculator(tTree, tStart + split, tLength - split, tTable));
-    }
+	@Override
+	protected void compute() {
+		if (tLength < tThreshold) {
+			computeDirectly();
+			return;
+		}
+		int split = tLength / 2;
+		invokeAll(new TruthTableCalculator(tTree, tStart, split, tTable),
+				new TruthTableCalculator(tTree, tStart + split, tLength - split, tTable));
+	}
 }
