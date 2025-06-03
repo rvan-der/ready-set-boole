@@ -23,7 +23,7 @@ public class AstBuilder {
 	public AbstractSyntaxTree astFromString(String formula) throws AstException {
 		if (formula == null) {
 			throw new AstException(
-				"Received null instead of String in astBuilder.");
+				"Received null instead of String in AstBuilder.");
 		}
 
 		ArrayDeque<AstNode> stack = new ArrayDeque<>();
