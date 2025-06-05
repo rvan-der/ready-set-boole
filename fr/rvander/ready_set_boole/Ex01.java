@@ -1,7 +1,5 @@
 package fr.rvander.ready_set_boole;
 
-import fr.rvander.ready_set_boole.Ex00;
-
 
 public class Ex01 {
 

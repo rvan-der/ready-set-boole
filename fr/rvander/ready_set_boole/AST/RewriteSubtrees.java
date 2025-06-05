@@ -1,7 +1,5 @@
 package fr.rvander.ready_set_boole.AST;
 
-import fr.rvander.ready_set_boole.AST.*;
-
 
 public class RewriteSubtrees {
 

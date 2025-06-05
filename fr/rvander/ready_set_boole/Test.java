@@ -2,13 +2,12 @@ package fr.rvander.ready_set_boole;
 
 import java.util.*;
 
-import fr.rvander.ready_set_boole.*;
-
 
 public class Test {
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("Set argument missing.");
+			return;
 		}
 		int[][] sets = parseSets(args[0]);
 		if (sets == null) {
@@ -17,16 +16,17 @@ public class Test {
 		}
 		if (sets.length != 1) {
 			System.err.println("Only one set must be provided.");
+			return;
 		}
 		int[] setArg = sets[0];
 		int[][] powerSet = Ex08.powerset(setArg);
-		// for (int[] set : powerSet) {
-		// 	System.out.print("{");
-		// 	for (int i = 0; i < set.length; i += 1) {
-		// 		System.out.print(String.format("%d%s", set[i], i == set.length - 1 ? "" : ", "));
-		// 	}
-		// 	System.out.println("}");
-		// }
+		for (int[] set : powerSet) {
+			System.out.print("{");
+			for (int i = 0; i < set.length; i += 1) {
+				System.out.print(String.format("%d%s", set[i], i == set.length - 1 ? "" : ", "));
+			}
+			System.out.println("}");
+		}
 	}
 
 	private static int[][] parseSets(String arg) {

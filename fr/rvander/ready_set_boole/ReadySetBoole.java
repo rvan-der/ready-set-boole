@@ -3,7 +3,6 @@ package fr.rvander.ready_set_boole;
 import java.util.*;
 import java.lang.reflect.*;
 
-import fr.rvander.ready_set_boole.*;
 import fr.rvander.ready_set_boole.AST.*;
 
 
@@ -24,8 +23,9 @@ public class ReadySetBoole {
 			}
 		} catch (Exception e) {
 			System.err.println(e);
+			return;
 		}
-		if (method == null || args[0].equals("main") || args[0].charAt(0) == '_') {
+		if (method == null || args[0].equals("main") || Modifier.isPrivate(method.getModifiers())) {
 			System.err.println("Method '" + args[0] + "' is not available.");
 			return;
 		}
@@ -37,15 +37,14 @@ public class ReadySetBoole {
 			return;
 		}
 		try {
-			method.invoke(new ReadySetBoole(),
-				(Object[]) Arrays.copyOfRange(args, 1, args.length));
+			method.invoke(null, (Object[])Arrays.copyOfRange(args, 1, args.length));
 		} catch (Exception e) {
-			System.err.println(e);
+			System.err.println(e.getCause());
 		}
 	}
 
 
-	private void adder(String a, String b) {
+	public static void adder(String a, String b) {
 		int aInt;
 		int bInt;
 		try {
@@ -60,7 +59,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void multiplier(String a, String b) {
+	public static void multiplier(String a, String b) {
 		int aInt;
 		int bInt;
 		try {
@@ -75,7 +74,7 @@ public class ReadySetBoole {
 	}
 
 
-	private void graycode(String n) {
+	public static void graycode(String n) {
 		int nInt;
 		try {
 			nInt = Integer.parseUnsignedInt(n);
@@ -88,32 +87,32 @@ public class ReadySetBoole {
 	}
 
 
-	private void evaluate(String formula) {
+	public static void evaluate(String formula) {
 		System.out.println(Ex03.eval_formula(formula));
 	}
 
 
-	private void table(String formula) {
+	public static void table(String formula) {
 		Ex04.print_truth_table(formula);
 	}
 
 
-	private void nnf(String formula) {
+	public static void nnf(String formula) {
 		System.out.println(Ex05.negation_normal_form(formula));
 	}
 
 
-	private void cnf(String formula) {
+	public static void cnf(String formula) {
 		System.out.println(Ex06.conjunctive_normal_form(formula));
 	}
 
 
-	private void sat(String formula) {
+	public static void sat(String formula) {
 		System.out.println(Ex07.sat(formula));
 	}
 
 
-	private void tree(String formula) {
+	public static void tree(String formula) {
 		try {
 			AstBuilder
 			.getAstBuilder()
@@ -127,7 +126,7 @@ public class ReadySetBoole {
 
 	// sets argument format:
 	// '{int[,...]} [{...}...]'
-	private int[][] _parseSets(String arg) {
+	private static int[][] parseSets(String arg) {
 		ArrayList<int[]> result = new ArrayList<>();
 		arg = arg.replaceAll("\\s","");
 		if (!arg.startsWith("{") || !arg.endsWith("}")) {
@@ -154,19 +153,21 @@ public class ReadySetBoole {
 	}
 
 
-	private void powerset(String arg) {
-		int[][] sets = _parseSets(arg);
+	public static void powerset(String arg) {
+		int[][] sets = parseSets(arg);
 		if (sets == null) {
 			System.err.println("Invalid argument format.");
 			return;
 		}
 		if (sets.length != 1) {
 			System.err.println("Only one set must be provided.");
+			return;
 		}
 		int[] setArg = sets[0];
-		// long start = System.currentTimeMillis();
-		int[][] powerSet = Ex08.powerset(setArg);
-		// long end = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
+		Ex08.powerset(setArg);
+		// int[][] powerSet = Ex08.powerset(setArg);
+		long end = System.currentTimeMillis();
 		// for (int[] set : powerSet) {
 		// 	System.out.print("{");
 		// 	for (int i = 0; i < set.length; i += 1) {
@@ -174,10 +175,11 @@ public class ReadySetBoole {
 		// 	}
 		// 	System.out.println("}");
 		// }
-		// System.out.println(String.format("powerset generation took %.3 seconds", (end - start) / 1000));
+		System.out.println(String.format("powerset generation took %.3f seconds", (float)(end - start) / 1000));
 	}
 
 
-	// write your own methods to test any feature
-	// add '_' as first character of the name to make it unavailable on the command line
+	// Write your own methods to test any feature !
+	// All methods must be static.
+	// Only public methods are available on the command line.
 }

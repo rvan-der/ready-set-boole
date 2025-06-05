@@ -1,7 +1,6 @@
 package fr.rvander.ready_set_boole;
 
 import fr.rvander.ready_set_boole.sets.*;
-import java.util.ArrayList;
 
 
 public class Ex08 {

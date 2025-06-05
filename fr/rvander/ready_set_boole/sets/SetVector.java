@@ -1,31 +1,46 @@
 package fr.rvander.ready_set_boole.sets;
 
-import java.util.BitSet;
 
+public class SetVector {
 
-public class SetVector extends BitSet {
-
-	private static final long serialVersionUID = -5552905034643187698L;
 	private int tSize;
+	private byte[] tVector;
+	private int tCardinality;
 
 
 	public SetVector(int p_size) {
-		super(p_size);
-		this.tSize = p_size;
+		tSize = p_size;
+		tVector = new byte[tSize];
+		tCardinality = 0;
+	}
+
+
+	public SetVector(int p_size, boolean initialValue) {
+		tSize = p_size;
+		tVector = new byte[tSize];
+		tCardinality = 0;
+		if (initialValue) {
+			for (int i = 0; i < tVector.length; i++) {
+				tVector[i] = 1;
+			}
+			tCardinality = tSize;
+		}
 	}
 
 
 	public boolean increment() {
-		if (cardinality() == tSize) {
+		if (tCardinality == tSize) {
 			return false;
 		}
 
 		boolean carry = true;
-		for (int i = 0; carry; i += 1) {
-			if (super.get(i)) {
-				super.set(i, false);
+		for (int i = 0; carry; i++) {
+			if (tVector[i] == 1) {
+				tVector[i] = 0;
+				tCardinality--;
 			} else {
-				super.set(i, true);
+				tVector[i] = 1;
+				tCardinality++;
 				carry = false;
 			}
 		}
@@ -35,112 +50,62 @@ public class SetVector extends BitSet {
 
 
 	public boolean decrement() {
-		if (cardinality() == 0) {
+		if (tCardinality == 0) {
 			return false;
 		}
 
 		int i = 0;
-		while (!super.get(i)) {
-			super.set(i, true);
-			i += 1;
+		while (tVector[i] == 0) {
+			tVector[i] = 1;
+			tCardinality++;
+			i++;
 		}
-		super.set(i, false);
+		tVector[i] = 0;
+		tCardinality--;
 
 		return true;
 	}
 
 
-	@Override
-	public boolean get(int bitIndex) {
-		if (bitIndex >= tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		return super.get(bitIndex);
+	public int cardinality() {
+		return tCardinality;
 	}
 
 
-	@Override
-	public BitSet get(int fromIndex, int toIndex) {
-		if (toIndex > tSize) {
+	public boolean get(int index) {
+		if (index >= tSize || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
-		return super.get(fromIndex, toIndex);
+		return (tVector[index] == 0 ? false: true);
 	}
 
 
-	@Override
-	public void set(int bitIndex) {
-		if (bitIndex >= tSize) {
+	public void set(int index, boolean value) {
+		if (index >= tSize || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
-		super.set(bitIndex);
+		if (value) {
+			tVector[index] = 1;
+			tCardinality++;
+			return;
+		}
+		tVector[index] = 0;
+		tCardinality--;
 	}
 
 
-	@Override
-	public void set(int fromIndex, int toIndex) {
-		if (toIndex > tSize) {
-			throw new IndexOutOfBoundsException();
+	public int[] trueIndices() {
+		int[] result = new int[tCardinality];
+		int head = 0;
+		for (int i = 0; i < tVector.length; i++) {
+			if (tVector[i] == 1) {
+				result[head++] = i;
+			}
 		}
-		super.set(fromIndex, toIndex);
+		return result;
 	}
 
 
-	@Override
-	public void set(int bitIndex, boolean value) {
-		if (bitIndex >= tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.set(bitIndex, value);
-	}
-
-
-	@Override
-	public void set(int fromIndex, int toIndex, boolean value) {
-		if (toIndex > tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.set(fromIndex, toIndex, value);
-	}
-
-
-	@Override
-	public void flip(int bitIndex) {
-		if (bitIndex >= tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.flip(bitIndex);
-	}
-
-
-	@Override
-	public void flip(int fromIndex, int toIndex) {
-		if (toIndex > tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.flip(fromIndex, toIndex);
-	}
-
-
-	@Override
-	public void clear(int bitIndex) {
-		if (bitIndex >= tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.clear(bitIndex);
-	}
-
-
-	@Override
-	public void clear(int fromIndex, int toIndex) {
-		if (toIndex > tSize) {
-			throw new IndexOutOfBoundsException();
-		}
-		super.clear(fromIndex, toIndex);
-	}
-
-
-	@Override
 	public int size() {
 		return this.tSize;
 	}

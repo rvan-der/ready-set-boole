@@ -1,6 +1,5 @@
 package fr.rvander.ready_set_boole.AST;
 
-import fr.rvander.ready_set_boole.AST.*;
 import java.util.HashMap;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
