@@ -27,8 +27,8 @@ public class TruthTableCalculator extends RecursiveAction {
 		int nbVars = tTree.getNbVars();
 		String[] variables = tTree.getVariables();
 		
-		for (int values = tStart; values < tStart + tLength; values += 1) {
-			for (int i = 0; i < nbVars; i += 1) {
+		for (int values = tStart; values < tStart + tLength; values++) {
+			for (int i = 0; i < nbVars; i++) {
 				int val = (values >>> (nbVars - i - 1)) & 1;
 				hypothesis.put(variables[i],
 							val == 1 ? Boolean.valueOf(true) : Boolean.valueOf(false));

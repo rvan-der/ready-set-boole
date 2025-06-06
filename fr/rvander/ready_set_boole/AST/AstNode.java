@@ -84,7 +84,7 @@ public abstract class AstNode implements Serializable {
 
 	protected String getFormula() {
 		String formula = "";
-		for (int i = 0; i < tType.nbOperands(); i += 1) {
+		for (int i = 0; i < tType.nbOperands(); i++) {
 			formula += tOperands[i].getFormula();
 		}
 		return formula + tToken;
@@ -137,7 +137,7 @@ public abstract class AstNode implements Serializable {
 
 	protected void visualize(int depth, String branches, boolean unary) {
 		if (depth > 0 && !unary) {
-			for (int i = 0; i < depth - 1; i += 1) {
+			for (int i = 0; i < depth - 1; i++) {
 				System.out.print(branches.substring(i, i + 1) + "  ");
 			}
 			System.out.print(branches.charAt(depth - 1) == '│' ? "├─╴" : "└─╴");
@@ -149,7 +149,7 @@ public abstract class AstNode implements Serializable {
 		if (tType.nbOperands() != 1) {
 			System.out.print("\n");
 		}
-		for (int i = tType.nbOperands() - 1; i >= 0; i -= 1) {
+		for (int i = tType.nbOperands() - 1; i >= 0; i--) {
 			tOperands[i].visualize(depth + 1,
 				branches + (i > 0 ? "│" : " "),
 				tType.nbOperands() == 1 ? true : false);
@@ -161,7 +161,7 @@ public abstract class AstNode implements Serializable {
 		AstNode copy = tType.createNode(tToken);
 		if (tType.nbOperands() > 0) {
 			AstNode[] operandsCopy = new AstNode[tType.nbOperands()];
-			for (int i = 0; i < tType.nbOperands(); i += 1) {
+			for (int i = 0; i < tType.nbOperands(); i++) {
 				operandsCopy[i] = tOperands[i].copySubtree();
 				copy.setOperands(operandsCopy);
 			}

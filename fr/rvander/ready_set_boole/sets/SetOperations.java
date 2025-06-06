@@ -73,26 +73,61 @@ public class SetOperations {
 	}
 
 
-	// public static int[] add(int[] left, int[] right) {
-	// 	SetVector vector = new SetVector(right.length, true);
-	// 	for (int i = 0; i < right.length; i++) {
-	// 		if (contains(left, right[i])) {
-	// 			vector.set(i, false);
-	// 		}
-	// 	}
-	// 	int[] result = new int[left.length + vector.cardinality()];
-	// 	int head = 0;
-	// 	for (int i = 0; i < left.length; i++) {
-	// 		result[head++] = left[i];
-	// 	}
-	// 	for (int i = 0; i < right.length; i++) {
-	// 		if (vector.get(i)) {
-	// 			result[head++] = right[i];
-	// 		}
-	// 	}
-	// 	return result;
-	// }
+	public static int[] intersection(int[] left, int[] right) {
+		int[] smallest = left.length <= right.length ? left : right;
+		int[] largest = left.length <= right.length ? right : left;
+		SetVector vector = new SetVector(smallest.length, false);
+
+		for (int i = 0; i < smallest.length; i++) {
+			if (contains(largest, smallest[i])) {
+				vector.set(i, true);
+			}
+		}
+		int[] result = new int[vector.cardinality()];
+		int head = 0;
+		for (int i = 0; i < smallest.length; i++) {
+			if (vector.get(i)) {
+				result[head++] = smallest[i];
+			}
+		}
+		return result;
+	}
 
 
-	
+	public static int[] union(int[] left, int[] right) {
+		SetVector vector = new SetVector(right.length, true);
+		for (int i = 0; i < right.length; i++) {
+			if (contains(left, right[i])) {
+				vector.set(i, false);
+			}
+		}
+		int[] result = new int[left.length + vector.cardinality()];
+		int head = 0;
+		for (int i = 0; i < left.length; i++) {
+			result[head++] = left[i];
+		}
+		for (int i = 0; i < right.length; i++) {
+			if (vector.get(i)) {
+				result[head++] = right[i];
+			}
+		}
+		return result;
+	}
+
+
+	public static int[] xor(int[] left, int[] right) {
+		return union(substract(left, right), substract(right, left));
+	}
+
+
+	public static int[] implication(int[] left, int[] right, int[] globalSet) {
+		return union(complement(left, globalSet), right);
+	}
+
+
+	public static int[] equivalence(int[] left, int[] right, int[] globalSet) {
+		return intersection(
+			union(complement(left, globalSet), right),
+			union(left, complement(right, globalSet)));
+	}
 }

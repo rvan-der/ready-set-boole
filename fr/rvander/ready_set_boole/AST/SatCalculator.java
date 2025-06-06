@@ -31,8 +31,8 @@ public class SatCalculator extends RecursiveAction {
 		String[] variables = tTree.getVariables();
 		
 		if (tTable == null) {
-			for (int interpretation = tStart; interpretation < tStart + tLength; interpretation += 1) {
-				for (int i = 0; i < nbVars; i += 1) {
+			for (int interpretation = tStart; interpretation < tStart + tLength; interpretation++) {
+				for (int i = 0; i < nbVars; i++) {
 					int value = (interpretation >>> (nbVars - i - 1)) & 1;
 					hypothesis.put(variables[i],
 								value == 1 ? Boolean.valueOf(true) : Boolean.valueOf(false));
@@ -44,7 +44,7 @@ public class SatCalculator extends RecursiveAction {
 			}
 		}
 		else {
-			for (int interpretation = tStart; interpretation < tStart + tLength; interpretation += 1) {
+			for (int interpretation = tStart; interpretation < tStart + tLength; interpretation++) {
 				if (tTable[interpretation] == 1) {
 					tResult.set(true);
 					return;

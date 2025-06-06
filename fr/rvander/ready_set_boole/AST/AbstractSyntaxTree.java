@@ -166,8 +166,8 @@ public class AbstractSyntaxTree implements Serializable {
 		for (int iBuffer = 0; iBuffer < nbBuffers; iBuffer++) {
 			for (int values = iBuffer * maxLinesPerBuffer;
 				values < (iBuffer + 1) * maxLinesPerBuffer && values < nbLines;
-				values += 1) {
-				for (int i = 0; i < tNbVars; i += 1) {
+				values++) {
+				for (int i = 0; i < tNbVars; i++) {
 					int val = (values >>> (tNbVars - i - 1)) & 1;
 					buffer.append("│ " + val + " ");
 				}

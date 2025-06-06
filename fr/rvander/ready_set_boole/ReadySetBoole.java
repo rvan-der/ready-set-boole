@@ -97,6 +97,30 @@ public class ReadySetBoole {
 	}
 
 
+	public static void tableTime(String formula) {
+		AbstractSyntaxTree tree = null;
+		try {
+			tree = AstBuilder
+				.getAstBuilder()
+				.astFromString(formula);
+		} catch (Exception e) {
+			System.err.println(e);
+			return;
+		}
+		if (tree.getNbVars() == 0) {
+			System.err.println("Can't generate the truth table for a formula without variables.");
+			return;
+		}
+		long start = System.currentTimeMillis();
+		tree.getTruthTable();
+		long end = System.currentTimeMillis();
+		if (tree.getNbVars() < 9) {
+			tree.printTruthTable();
+		}
+		System.out.println(String.format("Truth table generation took %.3f seconds.", (float)(end - start) / 1000));
+	}
+
+
 	public static void nnf(String formula) {
 		System.out.println(Ex05.negation_normal_form(formula));
 	}
@@ -107,6 +131,8 @@ public class ReadySetBoole {
 	}
 
 
+	// long unsatisfiable formula:
+	// 'AA!&BB!&CC!&DD!&EE!&FF!&GG!&HH!&II!&JJ!&KK!&LL!&MM!&NN!&OO!&PP!&QQ!&RR!&SS!&TT!&UU!&VV!&WW!&XX!&YY!&ZZ!&|||||||||||||||||||||||||'
 	public static void sat(String formula) {
 		System.out.println(Ex07.sat(formula));
 	}
@@ -138,7 +164,7 @@ public class ReadySetBoole {
 		for (String s : setStrings) {
 			String[] elemStrings = s.split(",");
 			int[] set = new int[elemStrings.length];
-			for (int i = 0; i < elemStrings.length; i += 1) {
+			for (int i = 0; i < elemStrings.length; i++) {
 				try {
 					set[i] = Integer.parseInt(elemStrings[i]);
 				} catch (Exception e){
@@ -153,29 +179,52 @@ public class ReadySetBoole {
 	}
 
 
-	public static void powerset(String arg) {
-		int[][] sets = parseSets(arg);
+	public static void powerset(String setString) {
+		int[][] sets = parseSets(setString);
 		if (sets == null) {
 			System.err.println("Invalid argument format.");
 			return;
 		}
 		if (sets.length != 1) {
-			System.err.println("Only one set must be provided.");
+			System.err.println("Exactly one set must be provided.");
 			return;
 		}
 		int[] setArg = sets[0];
 		long start = System.currentTimeMillis();
-		Ex08.powerset(setArg);
-		// int[][] powerSet = Ex08.powerset(setArg);
+		int[][] powerSet = Ex08.powerset(setArg);
 		long end = System.currentTimeMillis();
-		// for (int[] set : powerSet) {
-		// 	System.out.print("{");
-		// 	for (int i = 0; i < set.length; i += 1) {
-		// 		System.out.print(String.format("%d%s", set[i], i == set.length - 1 ? "" : ", "));
-		// 	}
-		// 	System.out.println("}");
-		// }
-		System.out.println(String.format("powerset generation took %.3f seconds", (float)(end - start) / 1000));
+		if (setArg.length < 9) {
+			for (int[] set : powerSet) {
+				System.out.print("{");
+				for (int i = 0; i < set.length; i++) {
+					System.out.print(String.format("%d%s", set[i], i == set.length - 1 ? "" : ", "));
+				}
+				System.out.println("}");
+			}
+		}
+		System.out.println(String.format("Powerset generation took %.3f seconds.", (float)(end - start) / 1000));
+	}
+
+
+	public static void evalset(String formula, String setString) {
+		int[][] sets = parseSets(setString);
+		if (sets == null) {
+			System.err.println("Invalid sets argument format.");
+			return;
+		}
+		if (sets.length < 1) {
+			System.err.println("At least one set must be provided.");
+			return;
+		}
+		int[] result = Ex09.eval_set(formula, sets);
+		if (result == null) {
+			return;
+		}
+		System.out.print("{");
+		for (int i = 0; i < result.length; i++) {
+			System.out.print(String.format("%d%s", result[i], i == result.length - 1 ? "" : ", "));
+		}
+		System.out.println("}");
 	}
 
 

@@ -19,14 +19,12 @@ public class Ex08 {
 			while (true) {
 				int[] subset = new int[setVector.cardinality()];
 				int subHead = 0;
-				for (int i = 0; i < set.length; i += 1) {
+				for (int i = 0; i < set.length; i++) {
 					if (setVector.get(i)) {
-						subset[subHead] = set[i];
-						subHead += 1;
+						subset[subHead++] = set[i];
 					}
 				}
-				result[resHead] = subset;
-				resHead += 1;
+				result[resHead++] = subset;
 				if (!setVector.increment()) {
 					break;
 				}
