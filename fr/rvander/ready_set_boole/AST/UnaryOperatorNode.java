@@ -48,7 +48,7 @@ public class UnaryOperatorNode extends AstNode {
 					operand.tToken)
 				.rewriteNegations();
 		}
-		tOperands[0] = tOperands[0].rewriteNegations();
+		setOperand(tOperands[0].rewriteNegations(), 0);
 		return this;
 	}
 }

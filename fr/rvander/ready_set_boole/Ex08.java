@@ -15,23 +15,18 @@ public class Ex08 {
 		int resHead = 0;
 		SetVector setVector = new SetVector(set.length);
 
-		try {
-			while (true) {
-				int[] subset = new int[setVector.cardinality()];
-				int subHead = 0;
-				for (int i = 0; i < set.length; i++) {
-					if (setVector.get(i)) {
-						subset[subHead++] = set[i];
-					}
-				}
-				result[resHead++] = subset;
-				if (!setVector.increment()) {
-					break;
+		while (true) {
+			int[] subset = new int[setVector.cardinality()];
+			int subHead = 0;
+			for (int i = 0; i < set.length; i++) {
+				if (setVector.get(i)) {
+					subset[subHead++] = set[i];
 				}
 			}
-		} catch (Exception e) {
-			System.err.println(e);
-			return null;
+			result[resHead++] = subset;
+			if (!setVector.increment()) {
+				break;
+			}
 		}
 
 		return result;

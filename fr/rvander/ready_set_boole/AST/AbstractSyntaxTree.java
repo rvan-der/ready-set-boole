@@ -3,6 +3,7 @@ package fr.rvander.ready_set_boole.AST;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.ArrayDeque;
 import java.lang.StringBuilder;
 import java.lang.Runtime;
 import java.io.Serializable;
@@ -56,19 +57,90 @@ public class AbstractSyntaxTree implements Serializable {
 	}
 
 
+	private void alignJunctions() {
+		ArrayDeque<AstNode> stack = new ArrayDeque<>();
+		UnaryOperatorNode rootHandle = new UnaryOperatorNode("!");
+		rootHandle.setOperand(tRoot, 0);
+		stack.push(tRoot);
+		AstNode current;
+		AstNode parent;
+
+		while (!stack.isEmpty()){
+			current = stack.pop();
+			parent = current.tParent;
+			for (int i = current.tType.nbOperands() - 1; i >= 0; i--) {
+				if (!stack.isEmpty() && stack.peek().equals(current.tOperands[i])) {
+					continue;
+				}
+				stack.push(current.tOperands[i]);
+			}
+			if (!"|&".contains(current.tToken)) {
+				continue;
+			}
+			int combination = (current.tOperands[0].tToken.equals(current.tToken) ? 2 : 0)
+						+ (current.tOperands[1].tToken.equals(current.tToken) ? 1 : 0);
+			switch (combination) {
+			case 2:
+				//    &           &
+				//   / \   -->   / \
+				//  &   A       A   &
+				AstNode swap = current.tOperands[0];
+				current.setOperand(current.tOperands[1], 0);
+				current.setOperand(swap, 1);
+				break;
+			case 3:
+				//     \                                       \                    \
+				//      & <-curr.            & <-curr.   root-> &   & <-curr.        & <-root
+				//     / \                \ / \                / \ / \              / \
+				//    &   &     1)  root-> &   &      2)      A   B   &       3)   A   & <-curr.
+				//   / \ / \    -->       / \ / \     -->            / \      -->     / \
+				//  A  B C  D            A  B C  D                  C   D            B   &
+				//                                                                      / \
+				//                                                                     C   D
+				// 1)
+				AstNode root = current.tOperands[0];
+				parent.setOperand(root, current.tIndex);
+				// 2)
+				current.setOperand(root.tOperands[1], 0);
+				// 3)
+				root.setOperand(current, 1);
+				break;
+			default:
+				break;
+			}
+		}
+
+		tRoot = rootHandle.tOperands[0];
+		tRoot.setParent(null);
+	}
+
+
 	public AbstractSyntaxTree rewriteCnf() {
 		tRoot = tRoot.rewriteOnlyJunctions();
 		tRoot = tRoot.rewriteNegations();
 		tRoot = tRoot.distributeJunctions("|");
 		tRoot = tRoot.simplify();
-		tRoot = tRoot.alignJunctions();
+		alignJunctions();
 		return this;
 	}
 
 
 	public String getFormula() {
-		return tRoot.getFormula();
+		ArrayDeque<AstNode> stack = new ArrayDeque<>();
+		StringBuilder result = new StringBuilder();
+		stack.push(tRoot);
+		
+		while (!stack.isEmpty()) {
+			AstNode current = stack.pop();
+			result.append(current.tToken);
+			for (int i = 0; i < current.tType.nbOperands(); i++) {
+				stack.push(current.tOperands[i]);
+			}
+		}
+
+		return result.reverse().toString();
 	}
+
 
 
 	public void visualize() {

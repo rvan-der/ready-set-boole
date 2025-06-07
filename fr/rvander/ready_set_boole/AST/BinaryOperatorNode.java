@@ -84,8 +84,8 @@ public class BinaryOperatorNode extends AstNode {
 							+ (right.tToken.equals(opposite) ? 1 : 0);
 		switch (combination) {
 		case 0:
-			tOperands[0] = tOperands[0].distributeJunctions(operator);
-			tOperands[1] = tOperands[1].distributeJunctions(operator);
+			setOperand(tOperands[0].distributeJunctions(operator), 0);
+			setOperand(tOperands[1].distributeJunctions(operator), 1);
 			if (tOperands[0].tToken.equals(opposite)
 				|| tOperands[1].tToken.equals(opposite)) {
 				newSubtree = this;
@@ -121,8 +121,8 @@ public class BinaryOperatorNode extends AstNode {
 
 	@Override
 	protected AstNode simplify() {
-		tOperands[0] = tOperands[0].simplify();
-		tOperands[1] = tOperands[1].simplify();
+		setOperand(tOperands[0].simplify(), 0);
+		setOperand(tOperands[1].simplify(), 1);
 		AstNode left = tOperands[0];
 		AstNode right = tOperands[1];
 
@@ -160,24 +160,5 @@ public class BinaryOperatorNode extends AstNode {
 			break;
 		}
 		return this;
-	}
-
-
-	@Override
-	protected AstNode alignJunctions() {
-		AstNode newSubtree;
-		int combination = (tOperands[0].tToken.equals(tToken) ? 2 : 0)
-						+ (tOperands[1].tToken.equals(tToken) ? 1 : 0);
-		switch (combination) {
-		case 2:
-			newSubtree = RewriteSubtrees.swapBranches(this);
-			break;
-		case 3:
-			newSubtree = RewriteSubtrees.alignDoubleJunction(this);
-			break;
-		default:
-			return super.alignJunctions();
-		}
-		return newSubtree.alignJunctions();
 	}
 }

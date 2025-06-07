@@ -2,7 +2,6 @@ package fr.rvander.ready_set_boole;
 
 import java.util.*;
 import java.lang.reflect.*;
-
 import fr.rvander.ready_set_boole.AST.*;
 
 
@@ -39,7 +38,7 @@ public class ReadySetBoole {
 		try {
 			method.invoke(null, (Object[])Arrays.copyOfRange(args, 1, args.length));
 		} catch (Exception e) {
-			System.err.println(e.getCause());
+			e.getCause().printStackTrace();
 		}
 	}
 
@@ -225,6 +224,18 @@ public class ReadySetBoole {
 			System.out.print(String.format("%d%s", result[i], i == result.length - 1 ? "" : ", "));
 		}
 		System.out.println("}");
+	}
+
+
+	public static void test(String formula) {
+		AbstractSyntaxTree tree;
+		try {
+			tree = AstBuilder.getAstBuilder().astFromString(formula);
+		} catch (Exception e) {
+			System.err.println(e);
+			return;
+		}
+		System.out.println(tree.getFormula());
 	}
 
 

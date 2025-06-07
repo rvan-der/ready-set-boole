@@ -8,6 +8,8 @@ import java.io.Serializable;
 public abstract class AstNode implements Serializable {
 
 	private static final long serialVersionUID = -7509745474094255803L;
+	protected AstNode tParent;
+	protected int tIndex;
 	protected AstNode[] tOperands;
 	protected String tToken;
 	protected String tMathSymbol;
@@ -15,9 +17,9 @@ public abstract class AstNode implements Serializable {
 
 
 	protected AstNode (AstNodeType type, String token) {
+		tIndex = -1;
 		tType = type;
 		tToken = token;
-		tOperands = null;
 	}
 
 
@@ -56,14 +58,6 @@ public abstract class AstNode implements Serializable {
 	}
 
 
-	protected AstNode alignJunctions() {
-		for (int i = 0; i < tType.nbOperands(); i++) {
-			tOperands[i] = tOperands[i].alignJunctions();
-		}
-		return this;
-	}
-
-
 	protected HashSet<String> getVariables(HashSet<String> varsSet) {
 		if (tType.nbOperands() > 0) {
 			for (AstNode operand : tOperands) {
@@ -79,15 +73,28 @@ public abstract class AstNode implements Serializable {
 
 	protected void setOperands(AstNode[] operands) {
 		tOperands = operands;
-	}
-	
-
-	protected String getFormula() {
-		String formula = "";
-		for (int i = 0; i < tType.nbOperands(); i++) {
-			formula += tOperands[i].getFormula();
+		for (int i = 0; i < operands.length; i++) {
+			operands[i].tIndex = i;
+			operands[i].setParent(this);
 		}
-		return formula + tToken;
+	}
+
+
+	protected void setOperand(AstNode operand, int index) {
+		if (tOperands == null) {
+			tOperands = new AstNode[tType.nbOperands()];
+		}
+		tOperands[index] = operand;
+		operand.tIndex = index;
+		operand.setParent(this);
+	}
+
+
+	protected void setParent(AstNode parent) {
+		tParent = parent;
+		if (parent == null) {
+			tIndex = -1;
+		}
 	}
 
 
@@ -163,8 +170,8 @@ public abstract class AstNode implements Serializable {
 			AstNode[] operandsCopy = new AstNode[tType.nbOperands()];
 			for (int i = 0; i < tType.nbOperands(); i++) {
 				operandsCopy[i] = tOperands[i].copySubtree();
-				copy.setOperands(operandsCopy);
 			}
+			copy.setOperands(operandsCopy);
 		}
 		return copy;
 	}

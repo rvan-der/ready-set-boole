@@ -8,12 +8,12 @@ public class RewriteSubtrees {
 		AstNode root = new BinaryOperatorNode("|");
 		AstNode[] rootOperands = new AstNode[2];
 		AstNode negation = new UnaryOperatorNode("!");
-		AstNode[] negationOperands = new AstNode[1];
+		AstNode[] negationOperand = new AstNode[1];
 		rootOperands[0] = negation;
 		rootOperands[1] = b;
-		negationOperands[0] = a;
+		negationOperand[0] = a;
 		root.setOperands(rootOperands);
-		negation.setOperands(negationOperands);
+		negation.setOperands(negationOperand);
 		return root;
 	}
 
@@ -23,8 +23,8 @@ public class RewriteSubtrees {
 	protected static AstNode equivalence(AstNode a, AstNode b) {
 		AstNode root = new BinaryOperatorNode("&");
 		AstNode[] rootOperands = new AstNode[2];
-		AstNode left = RewriteSubtrees.materialCondition(a, b);
-		AstNode right = RewriteSubtrees.materialCondition(b.copySubtree(), a.copySubtree());
+		AstNode left = materialCondition(a, b);
+		AstNode right = materialCondition(b.copySubtree(), a.copySubtree());
 		rootOperands[0] = left;
 		rootOperands[1] = right;
 		root.setOperands(rootOperands);
@@ -144,31 +144,5 @@ public class RewriteSubtrees {
 		junction3.setOperands(junction3operands);
 		junction4.setOperands(junction4operands);
 		return root1;
-	}
-
-
-	//         & <-node       & <-root
-	//        / \            / \
-	//root-> &   &          A   & <-node
-	//      / \ / \   -->      / \
-	//     A  B C  D          B   &
-	//                           / \
-	//                          C   D
-	protected static AstNode alignDoubleJunction(AstNode node) {
-		AstNode root = node.tOperands[0];
-		node.tOperands[0] = root.tOperands[1];
-		root.tOperands[1] = node;
-		return root;
-	}
-
-
-	//    &           &
-	//   / \   -->   / \
-	//  &   A       A   &
-	protected static AstNode swapBranches(AstNode node) {
-		AstNode swap = node.tOperands[0];
-		node.tOperands[0] = node.tOperands[1];
-		node.tOperands[1] = swap;
-		return node;
 	}
 }

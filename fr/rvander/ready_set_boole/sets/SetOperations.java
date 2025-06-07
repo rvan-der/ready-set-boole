@@ -34,8 +34,7 @@ public class SetOperations {
 		int[] result = new int[size];
 		int head = 0;
 		for (int iSet = 0; iSet < sets.length; iSet++) {
-			int[] indices = vectors[iSet].trueIndices();
-			for (int iElem : indices) {
+			for (int iElem : vectors[iSet].trueIndices()) {
 				result[head++] = sets[iSet][iElem];
 			}
 		}
@@ -64,10 +63,8 @@ public class SetOperations {
 		}
 		int[] result = new int[vector.cardinality()];
 		int head = 0;
-		for (int i = 0; i < left.length; i++) {
-			if (vector.get(i)) {
-				result[head++] = left[i];
-			}
+		for (int i : vector.trueIndices()) {
+			result[head++] = left[i];
 		}
 		return result;
 	}
@@ -85,10 +82,8 @@ public class SetOperations {
 		}
 		int[] result = new int[vector.cardinality()];
 		int head = 0;
-		for (int i = 0; i < smallest.length; i++) {
-			if (vector.get(i)) {
-				result[head++] = smallest[i];
-			}
+		for (int i : vector.trueIndices()) {
+			result[head++] = smallest[i];
 		}
 		return result;
 	}
